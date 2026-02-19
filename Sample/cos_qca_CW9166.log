@@ -1,0 +1,963 @@
+<run timestamp='2026-02-18T10:48:10.040994' device='cos_qca' hostname='CW9166' model='CW9166D1-B' version='17.12.6.28' Ip='192.168.0.164' SN='KWC271505R1'>
+
+<cmd string='show version'>
+	show version
+             Restricted Rights Legend
+
+Use, duplication, or disclosure by the Government is subject to
+restrictions as set forth in subparagraph (c) of the Commercial
+Computer Software - Restricted Rights clause at FAR sec. 52.227-19 and
+subparagraph (c) (1) (ii) of the Rights in Technical Data and Computer
+Software clause at DFARS sec. 252.227-7013.
+
+            Cisco Systems, Inc.
+            170 West Tasman Drive
+            San Jose, California 95134-1706
+
+This product contains cryptographic features and is subject to United
+States and local country laws governing import, export, transfer and
+use. Delivery of Cisco cryptographic products does not imply
+third-party authority to import, export, distribute or use encryption.
+Importers, exporters, distributors and users are responsible for
+compliance with U.S. and local country laws. By using this product you
+agree to comply with applicable laws and regulations. If you are unable
+to comply with U.S. and local laws, return this product immediately.
+
+A summary of U.S. laws governing Cisco cryptographic products may be found at:
+http://www.cisco.com/wwl/export/crypto/tool/stqrg.html
+
+If you require further assistance please contact us by sending email to
+export@cisco.com.
+
+This product contains some software licensed under the
+"GNU General Public License, version 2" provided with
+ABSOLUTELY NO WARRANTY under the terms of
+"GNU General Public License, version 2", available here:
+http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+
+This product contains some software licensed under the
+"GNU Library General Public License, version 2" provided
+with ABSOLUTELY NO WARRANTY under the terms of "GNU Library
+General Public License, version 2", available here:
+http://www.gnu.org/licenses/old-licenses/lgpl-2.0.html
+
+This product contains some software licensed under the
+"GNU Lesser General Public License, version 2.1" provided
+with ABSOLUTELY NO WARRANTY under the terms of "GNU Lesser
+General Public License, version 2.1", available here:
+http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+
+This product contains some software licensed under the 
+"GNU General Public License, version 3" provided with 
+ABSOLUTELY NO WARRANTY under the terms of  
+"GNU General Public License, Version 3", available here: 
+http://www.gnu.org/licenses/gpl.html.
+
+This product contains some software licensed under the
+"GNU Affero General Public License, version 3" provided
+with ABSOLUTELY NO WARRANTY under the terms of
+"GNU Affero General Public License, version 3", available here:
+http://www.gnu.org/licenses/agpl-3.0.html.
+
+Cisco AP Software, (ap1g6a), C91661, RELEASE SOFTWARE
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2026 by Cisco Systems, Inc.
+Compiled Tue Aug 26 12:15:14 GMT 2025
+
+ROM: Bootstrap program is U-Boot boot loader
+BOOTLDR: U-Boot boot loader Version 2023050509
+TZ: Trustzone Version CRM-TZ.BF.4.0.8-00209
+
+CW9166 uptime is 0 days, 0 hours, 20 minutes
+Last reload time   : Fri Feb 13 02:40:05 UTC 2026
+Last reload reason : unknown
+ 
+cisco CW9166D1-B ARMv8 Processor rev 4 (v8l) with 1791460/825420K bytes of memory.
+Processor board ID KWC271505R1
+AP Running Image     : 17.12.6.28
+Primary Boot Image   : 17.12.6.28
+Backup Boot Image    : 17.12.0.39
+Primary Boot Image Hash: 9f0d166bb1c3ef955c25ce481e48a332d5b95017ca3cd3d1c08d1c6931c78fa6e62dfb042758827ac6f7b09d311fd022b222028233b17c1ad81728779386536c
+Backup  Boot Image Hash: 
+1 Multigigabit Ethernet interfaces
+3 802.11 Radios
+1 Bluetooth Low Energy Radio (EFR32MG21)
+Radio FW version : QC_IMAGE_VERSION_STRING=WLAN.HK.2.7-04674-QCAHKSWPL_SILICONZ-1
+NSS FW version : NSS.FW.12.0-custom-HK.E_custC
+
+Base ethernet MAC Address            : 68:49:92:7A:3E:30
+Part Number                          : 0-0000-00
+PCA Assembly Number                  : 074-126728-01
+PCA Revision Number                  : A0
+PCB Serial Number                    : KWC271505R1
+Top Assembly Part Number             : 074-126728-01
+Top Assembly Serial Number           : KWC271505R1
+Top Revision Number                  : A0
+Product/Model Number                 : CW9166D1-B          
+Cloud ID                             : Q5AH-BF2X-ZFLH
+
+
+<run timestamp='2026-02-18T10:59:53.144435' device='cos_qca' hostname='CW9166' model='CW9166D1-B' version='17.12.6.28' Ip='192.168.0.164' SN='KWC271505R1'>
+
+<cmd string='show clock'>
+	show clock
+*05:29:52 UTC Wed Feb 18 2026
+
+
+<cmd string='show version'>
+	show version
+             Restricted Rights Legend
+
+Use, duplication, or disclosure by the Government is subject to
+restrictions as set forth in subparagraph (c) of the Commercial
+Computer Software - Restricted Rights clause at FAR sec. 52.227-19 and
+subparagraph (c) (1) (ii) of the Rights in Technical Data and Computer
+Software clause at DFARS sec. 252.227-7013.
+
+            Cisco Systems, Inc.
+            170 West Tasman Drive
+            San Jose, California 95134-1706
+
+This product contains cryptographic features and is subject to United
+States and local country laws governing import, export, transfer and
+use. Delivery of Cisco cryptographic products does not imply
+third-party authority to import, export, distribute or use encryption.
+Importers, exporters, distributors and users are responsible for
+compliance with U.S. and local country laws. By using this product you
+agree to comply with applicable laws and regulations. If you are unable
+to comply with U.S. and local laws, return this product immediately.
+
+A summary of U.S. laws governing Cisco cryptographic products may be found at:
+http://www.cisco.com/wwl/export/crypto/tool/stqrg.html
+
+If you require further assistance please contact us by sending email to
+export@cisco.com.
+
+This product contains some software licensed under the
+"GNU General Public License, version 2" provided with
+ABSOLUTELY NO WARRANTY under the terms of
+"GNU General Public License, version 2", available here:
+http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+
+This product contains some software licensed under the
+"GNU Library General Public License, version 2" provided
+with ABSOLUTELY NO WARRANTY under the terms of "GNU Library
+General Public License, version 2", available here:
+http://www.gnu.org/licenses/old-licenses/lgpl-2.0.html
+
+This product contains some software licensed under the
+"GNU Lesser General Public License, version 2.1" provided
+with ABSOLUTELY NO WARRANTY under the terms of "GNU Lesser
+General Public License, version 2.1", available here:
+http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+
+This product contains some software licensed under the 
+"GNU General Public License, version 3" provided with 
+ABSOLUTELY NO WARRANTY under the terms of  
+"GNU General Public License, Version 3", available here: 
+http://www.gnu.org/licenses/gpl.html.
+
+This product contains some software licensed under the
+"GNU Affero General Public License, version 3" provided
+with ABSOLUTELY NO WARRANTY under the terms of
+"GNU Affero General Public License, version 3", available here:
+http://www.gnu.org/licenses/agpl-3.0.html.
+
+Cisco AP Software, (ap1g6a), C91661, RELEASE SOFTWARE
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2026 by Cisco Systems, Inc.
+Compiled Tue Aug 26 12:15:14 GMT 2025
+
+ROM: Bootstrap program is U-Boot boot loader
+BOOTLDR: U-Boot boot loader Version 2023050509
+TZ: Trustzone Version CRM-TZ.BF.4.0.8-00209
+
+CW9166 uptime is 0 days, 0 hours, 32 minutes
+Last reload time   : Fri Feb 13 02:40:05 UTC 2026
+Last reload reason : unknown
+ 
+cisco CW9166D1-B ARMv8 Processor rev 4 (v8l) with 1791460/661180K bytes of memory.
+Processor board ID KWC271505R1
+AP Running Image     : 17.12.6.28
+Primary Boot Image   : 17.12.6.28
+Backup Boot Image    : 17.12.0.39
+Primary Boot Image Hash: 9f0d166bb1c3ef955c25ce481e48a332d5b95017ca3cd3d1c08d1c6931c78fa6e62dfb042758827ac6f7b09d311fd022b222028233b17c1ad81728779386536c
+Backup  Boot Image Hash: 
+1 Multigigabit Ethernet interfaces
+3 802.11 Radios
+1 Bluetooth Low Energy Radio (EFR32MG21)
+Radio FW version : QC_IMAGE_VERSION_STRING=WLAN.HK.2.7-04674-QCAHKSWPL_SILICONZ-1
+NSS FW version : NSS.FW.12.0-custom-HK.E_custC
+
+Base ethernet MAC Address            : 68:49:92:7A:3E:30
+Part Number                          : 0-0000-00
+PCA Assembly Number                  : 074-126728-01
+PCA Revision Number                  : A0
+PCB Serial Number                    : KWC271505R1
+Top Assembly Part Number             : 074-126728-01
+Top Assembly Serial Number           : KWC271505R1
+Top Revision Number                  : A0
+Product/Model Number                 : CW9166D1-B          
+Cloud ID                             : Q5AH-BF2X-ZFLH
+
+
+
+<cmd string='show flash'>
+	show flash
+Directory of /storage/
+total 21152K
+-rw-r--r--    1 root     root             2 Feb 13 02:40 2G_BEfilter
+-rw-r--r--    1 root     root             3 Feb 13 02:40 BOOT_COUNT
+-rw-r--r--    1 root     root             3 Feb 13 02:40 BOOT_COUNT.reserve
+-rw-r--r--    1 root     root             4 Feb 18 04:59 CDUMP_COUNT
+-rw-r--r--    1 root     root            11 Feb 13 02:40 COOKIE_PID
+-rw-r--r--    1 root     root            29 Feb 13 02:40 RELOADED_AT_UTC
+-rw-r--r--    1 root     root            12 Feb 13 02:40 TOP_ASSEMBLY_SNUMBER
+-rw-r--r--    1 root     root         63100 Feb 13 02:39 after-upgrade.log
+drwxr-xr-x    2 rsyncuse root           160 Feb 13 02:40 application
+-rw-r--r--    1 root     root          5866 Feb 18 04:59 base_capwap_cfg_info
+-rw-r--r--    1 root     root         60354 Feb 13 02:39 before-upgrade.log
+-rw-r--r--    1 root     root             2 Apr 15  2023 boot_debug
+-rw-r--r--    1 root     root          5272 Feb 13 02:40 bootloader.log
+-rw-r--r--    1 root     root             0 Apr 15  2023 check_ap_move
+-rw-r--r--    1 root     root      21420934 Feb 18 05:29 cnssdaemon.log
+-rw-r--r--    1 root     root            18 Apr 15  2023 config
+-rw-r--r--    1 root     root          8346 Feb 18 04:59 config.flex
+-rw-r--r--    1 root     root             0 Feb 18 04:59 config.flex.mgroup
+-rw-r--r--    1 root     root             0 Feb 13 02:40 config.local
+-rw-r--r--    1 root     root            47 Feb 13 02:40 config.mobexp
+-rw-r--r--    1 root     root             0 Feb 13 02:40 config.oeap
+-rw-r--r--    1 root     root             0 Feb 18 04:59 config.ranging
+-rw-r--r--    1 root     root           917 Feb 18 05:29 config.wireless
+drwxr-xr-x    2 root     root           160 Jan  1  1970 cores
+drwxr-xr-x    2 root     root           160 Jan  1  1970 firmware
+-rw-r--r--    1 root     root             0 Feb 18 04:59 geoloc.data
+-rw-r--r--    1 root     root           158 Feb 18 04:58 iot_status_ttyiot0.txt
+-rw-r--r--    1 root     root           261 Feb 13 02:40 last_good_uplink_config
+drwxr-xr-x    2 root     root           160 Jan  1  1970 lists
+-rw-r--r--    1 root     root           237 Feb 13 02:39 part1_info.ver
+-rw-r--r--    1 root     root            85 Apr 15  2023 part2_info.ver
+drwxr-xr-x    3 root     root           368 Feb 13 02:39 pnp
+-rw-r--r--    1 root     root          4096 Feb 18 05:03 random_seed
+-rw-r--r--    1 root     root             3 Apr 15  2023 rxtx_mode
+drwxr-xr-x    2 root     root           648 Apr 15  2023 ssh
+-rw-r--r--    1 root     root            40 Apr 15  2023 stable_secret_seed
+drwxr-xr-x    3 support  root           224 Apr 15  2023 support
+drwxr-xr-x    2 root     root          4232 Feb 18 05:23 syslogs
+-rw-r--r--    1 root     root           464 Jan  1  1970 wipeout-log
+-rw-r--r--    1 root     root             1 Feb 18 04:59 wips_adminstate_capwap
+---------------------------------------------------------------------------
+Filesystem                Size      Used Available Use% Mounted on
+/dev/ubivol/part2       387.8M     86.8M    296.3M  23% /part2
+
+
+
+<cmd string='show flash | i cnssdaemon.log'>
+	show flash | i cnssdaemon.log
+-rw-r--r--    1 root     root      21420934 Feb 18 05:29 cnssdaemon.log
+
+
+<cmd string='show boot'>
+	show boot
+
+--- Boot Variable Table ---
+BOOT path-list:      part1
+Console Baudrate:    9600
+Enable Break:        
+Manual Boot:         no
+Memory Debug:        no
+Crashkernel:         no
+SCRUB_LIMIT:         40 (default)
+Kdump Limit:         0
+Kdump Collected:     0
+Debug init:          0
+---- Critical Applications UP timestamp ---
+#This file contains EVENT, TIME(in seconds since boot)
+SYSTEMD-START-ubifs_reformat_mount: [34.85]
+SYSTEMD-START-mountfs: [35.96]
+MOUNTFS-START: [36.12]
+MOUNTFS-END: [36.60]
+SYSTEMD-START-system_time_start: [36.76]
+SYSTEMD-START-generate_platforms: [36.82]
+SYSTEMD-START-fipscheck: [36.89]
+SYSTEMD-START-cisco-seed: [36.94]
+SYSTEMD-START-S10boot: [39.92]
+SYSTEMD-START-system_time_stop: [39.99]
+SYSTEMD-START-act2check: [40.06]
+SYSTEMD-START-pkginstall: [40.13]
+SYSTEMD-START-S15nss: [47.09]
+SYSTEMD-START-nolan: [47.34]
+SYSTEMD-START-nolan_usb: [47.62]
+SYSTEMD-START-S15kclick: [47.68]
+SYSTEMD-START-S15platform: [47.73]
+SYSTEMD-START-pre_poe_neg: [48.04]
+SYSTEMD-START-S16mod_load: [49.03]
+SYSTEMD-START-sysctl: [49.33]
+SYSTEMD-START-me-ewlc: [49.38]
+SYSTEMD-START-S18cisco: [49.44]
+SYSTEMD-START-act2_init: [50.85]
+SYSTEMD-START-S16platform: [50.98]
+SYSTEMD-START-rsyslog: [51.11]
+SYSTEMD-START-synclogd: [51.33]
+SYSTEMD-START-brain: [51.40]
+CAPWAP_BRAIN_START: [51.53]
+SYSTEMD-START-powerd: [51.87]
+CAPWAP_BRAIN_CLICK_GRAPH_INIT_BEGIN: [52.14]
+SYSTEMD-START-pine_scan_aux_radio_tune: [52.53]
+CAPWAP_BRAIN_CLICK_GRAPH_INIT_END: [53.44]
+CAPWAP_BRAIN_LOAD_WIRELESS_DRIVERS_MAIN_BEGIN: [53.46]
+CAPWAP_BRAIN_LOAD_WIRELESS_DRIVERS_MAIN_END: [58.14]
+CAPWAP_BRAIN_LOOP_START: [58.17]
+CAPWAP_BRAIN_BEGIN_INIT_SETUP: [58.22]
+CAPWAP_BRAIN_AUX_RADIO_SETUP_DONE: [61.46]
+CAPWAP_BRAIN_DONE_INIT_SETUP: [62.13]
+SYSTEMD-AUX-UP-pine_scan_aux_radio_tune: [62.67]
+SYSTEMD-START-ntp_proc: [67.70]
+SYSTEMD-START-nssmon: [67.75]
+SYSTEMD-START-printkd: [67.81]
+SYSTEMD-START-klogd: [68.24]
+SYSTEMD-START-env_sensors: [69.22]
+SYSTEMD-START-sshd: [69.78]
+SYSTEMD-START-wcpd: [70.45]
+SYSTEMD-START-capwapd: [70.68]
+SYSTEMD-START-led: [70.88]
+SYSTEMD-START-ble: [71.00]
+SYSTEMD-START-cisco-kexec: [71.03]
+SYSTEMD-START-image_updater: [71.15]
+GOT IP[192.168.0.164]: [72.29]
+SYSTEMD-START-system_monitor: [72.53]
+SYSTEMD-START-hostapd: [74.80]
+SYSTEMD-START-cleanair: [74.82]
+SYSTEMD-START-aptraced: [74.82]
+SYSTEMD-START-dnsmasq: [74.83]
+SYSTEMD-START-rtd: [74.83]
+SYSTEMD-START-grpc: [74.86]
+SYSTEMD-START-dnsmasq: [75.13]
+SYSTEMD-START-dhcpv6: [78.87]
+SYSTEMD-START-fastcgi: [81.42]
+SYSTEMD-START-rangingd.service: [82.16]
+SYSTEMD-START-ftm_capability.service: [87.15]
+CAPWAP-STATE[Init]: [87.74]
+CAPWAP-STATE[Discovery]: [87.76]
+SYSTEMD-START-dhcpv6: [88.24]
+CAPWAP-STATE[Discovery]: [89.38]
+CAPWAP-STATE[Discovery]: [99.26]
+SYSTEMD-START-dhcpv6: [99.47]
+CAPWAP-STATE[Discovery]: [109.26]
+SYSTEMD-START-dhcpv6: [109.58]
+CAPWAP-STATE[Discovery]: [119.27]
+SYSTEMD-START-dhcpv6: [119.36]
+SYSTEMD-START-dhcpv6: [125.37]
+CAPWAP-STATE[Discovery]: [129.27]
+SYSTEMD-START-dhcpv6: [129.73]
+CAPWAP-STATE[DTLS Setup]: [139.29]
+CAPWAP-STATE[Join]: [140.39]
+CAPWAP-STATE[Image Data]: [141.28]
+CAPWAP-STATE[Configure]: [141.40]
+SYSTEMD-END-pine_scan_aux_radio_tune: [142.22]
+CAPWAP-STATE[Run]: [142.45]
+SYSTEMD-START-rsyslog: [143.27]
+
+
+<cmd string='show filesystems'>
+	show filesystems
+Filesystem                Size      Used Available Use% Mounted on
+devtmpfs                871.9M         0    871.9M   0% /dev
+/sysroot                874.7M    207.0M    667.7M  24% /
+tmpfs                     1.0M     56.0K    968.0K   5% /dev/shm
+tmpfs                   874.7M         0    874.7M   0% /run
+tmpfs                   874.7M         0    874.7M   0% /sys/fs/cgroup
+/dev/ubivol/part1       278.3M     77.3M    196.3M  28% /part1
+/dev/ubivol/part2       387.8M     86.8M    296.3M  23% /part2
+none                    140.0M      3.7M    136.3M   3% /tmp
+none                      1.0M     56.0K    968.0K   5% /dev/shm
+tmpfs                   135.0M         0    135.0M   0% /mnt/tmp_radio1_core
+
+
+<cmd string='show image integrity'>
+	show image integrity
+/part1(primary) 17.12.6.28
+    part.bin : Good
+    ramfs_data_cisco.squashfs : Good
+    iox.tar.gz : Good
+/part2(Backup) 17.12.0.39
+    part.bin : Good
+    ramfs_data_cisco.squashfs : Good
+    iox.tar.gz : Good
+
+<run timestamp='2026-02-18T12:36:21.899133' device='cos_qca' hostname='CW9166' model='CW9166D1-B' version='17.12.6.28' Ip='192.168.0.164' SN='KWC271505R1'>
+
+<cmd string='show clock'>
+	show clock
+*07:06:21 UTC Wed Feb 18 2026
+
+
+<cmd string='show version'>
+	show version
+             Restricted Rights Legend
+
+Use, duplication, or disclosure by the Government is subject to
+restrictions as set forth in subparagraph (c) of the Commercial
+Computer Software - Restricted Rights clause at FAR sec. 52.227-19 and
+subparagraph (c) (1) (ii) of the Rights in Technical Data and Computer
+Software clause at DFARS sec. 252.227-7013.
+
+            Cisco Systems, Inc.
+            170 West Tasman Drive
+            San Jose, California 95134-1706
+
+This product contains cryptographic features and is subject to United
+States and local country laws governing import, export, transfer and
+use. Delivery of Cisco cryptographic products does not imply
+third-party authority to import, export, distribute or use encryption.
+Importers, exporters, distributors and users are responsible for
+compliance with U.S. and local country laws. By using this product you
+agree to comply with applicable laws and regulations. If you are unable
+to comply with U.S. and local laws, return this product immediately.
+
+A summary of U.S. laws governing Cisco cryptographic products may be found at:
+http://www.cisco.com/wwl/export/crypto/tool/stqrg.html
+
+If you require further assistance please contact us by sending email to
+export@cisco.com.
+
+This product contains some software licensed under the
+"GNU General Public License, version 2" provided with
+ABSOLUTELY NO WARRANTY under the terms of
+"GNU General Public License, version 2", available here:
+http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+
+This product contains some software licensed under the
+"GNU Library General Public License, version 2" provided
+with ABSOLUTELY NO WARRANTY under the terms of "GNU Library
+General Public License, version 2", available here:
+http://www.gnu.org/licenses/old-licenses/lgpl-2.0.html
+
+This product contains some software licensed under the
+"GNU Lesser General Public License, version 2.1" provided
+with ABSOLUTELY NO WARRANTY under the terms of "GNU Lesser
+General Public License, version 2.1", available here:
+http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+
+This product contains some software licensed under the 
+"GNU General Public License, version 3" provided with 
+ABSOLUTELY NO WARRANTY under the terms of  
+"GNU General Public License, Version 3", available here: 
+http://www.gnu.org/licenses/gpl.html.
+
+This product contains some software licensed under the
+"GNU Affero General Public License, version 3" provided
+with ABSOLUTELY NO WARRANTY under the terms of
+"GNU Affero General Public License, version 3", available here:
+http://www.gnu.org/licenses/agpl-3.0.html.
+
+Cisco AP Software, (ap1g6a), C91661, RELEASE SOFTWARE
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2026 by Cisco Systems, Inc.
+Compiled Tue Aug 26 12:15:14 GMT 2025
+
+ROM: Bootstrap program is U-Boot boot loader
+BOOTLDR: U-Boot boot loader Version 2023050509
+TZ: Trustzone Version CRM-TZ.BF.4.0.8-00209
+
+CW9166 uptime is 0 days, 2 hours, 08 minutes
+Last reload time   : Fri Feb 13 02:40:05 UTC 2026
+Last reload reason : unknown
+ 
+cisco CW9166D1-B ARMv8 Processor rev 4 (v8l) with 1791460/649104K bytes of memory.
+Processor board ID KWC271505R1
+AP Running Image     : 17.12.6.28
+Primary Boot Image   : 17.12.6.28
+Backup Boot Image    : 17.12.0.39
+Primary Boot Image Hash: 9f0d166bb1c3ef955c25ce481e48a332d5b95017ca3cd3d1c08d1c6931c78fa6e62dfb042758827ac6f7b09d311fd022b222028233b17c1ad81728779386536c
+Backup  Boot Image Hash: 
+1 Multigigabit Ethernet interfaces
+3 802.11 Radios
+1 Bluetooth Low Energy Radio (EFR32MG21)
+Radio FW version : QC_IMAGE_VERSION_STRING=WLAN.HK.2.7-04674-QCAHKSWPL_SILICONZ-1
+NSS FW version : NSS.FW.12.0-custom-HK.E_custC
+
+Base ethernet MAC Address            : 68:49:92:7A:3E:30
+Part Number                          : 0-0000-00
+PCA Assembly Number                  : 074-126728-01
+PCA Revision Number                  : A0
+PCB Serial Number                    : KWC271505R1
+Top Assembly Part Number             : 074-126728-01
+Top Assembly Serial Number           : KWC271505R1
+Top Revision Number                  : A0
+Product/Model Number                 : CW9166D1-B          
+Cloud ID                             : Q5AH-BF2X-ZFLH
+
+
+
+<cmd string='show flash'>
+	show flash
+Directory of /storage/
+total 21488K
+-rw-r--r--    1 root     root             2 Feb 13 02:40 2G_BEfilter
+-rw-r--r--    1 root     root             3 Feb 13 02:40 BOOT_COUNT
+-rw-r--r--    1 root     root             3 Feb 13 02:40 BOOT_COUNT.reserve
+-rw-r--r--    1 root     root             4 Feb 18 04:59 CDUMP_COUNT
+-rw-r--r--    1 root     root            11 Feb 13 02:40 COOKIE_PID
+-rw-r--r--    1 root     root            29 Feb 13 02:40 RELOADED_AT_UTC
+-rw-r--r--    1 root     root            12 Feb 13 02:40 TOP_ASSEMBLY_SNUMBER
+-rw-r--r--    1 root     root         63100 Feb 13 02:39 after-upgrade.log
+drwxr-xr-x    2 rsyncuse root           160 Feb 13 02:40 application
+-rw-r--r--    1 root     root          5866 Feb 18 04:59 base_capwap_cfg_info
+-rw-r--r--    1 root     root         60354 Feb 13 02:39 before-upgrade.log
+-rw-r--r--    1 root     root             2 Apr 15  2023 boot_debug
+-rw-r--r--    1 root     root          5272 Feb 13 02:40 bootloader.log
+-rw-r--r--    1 root     root             0 Apr 15  2023 check_ap_move
+-rw-r--r--    1 root     root      21762426 Feb 18 07:06 cnssdaemon.log
+-rw-r--r--    1 root     root            18 Apr 15  2023 config
+-rw-r--r--    1 root     root          8346 Feb 18 04:59 config.flex
+-rw-r--r--    1 root     root             0 Feb 18 04:59 config.flex.mgroup
+-rw-r--r--    1 root     root             0 Feb 13 02:40 config.local
+-rw-r--r--    1 root     root            47 Feb 13 02:40 config.mobexp
+-rw-r--r--    1 root     root             0 Feb 13 02:40 config.oeap
+-rw-r--r--    1 root     root             0 Feb 18 04:59 config.ranging
+-rw-r--r--    1 root     root           883 Feb 18 06:30 config.wireless
+drwxr-xr-x    2 root     root           160 Jan  1  1970 cores
+drwxr-xr-x    2 root     root           160 Jan  1  1970 firmware
+-rw-r--r--    1 root     root             0 Feb 18 04:59 geoloc.data
+-rw-r--r--    1 root     root           158 Feb 18 04:58 iot_status_ttyiot0.txt
+-rw-r--r--    1 root     root           261 Feb 13 02:40 last_good_uplink_config
+drwxr-xr-x    2 root     root           160 Jan  1  1970 lists
+-rw-r--r--    1 root     root           237 Feb 13 02:39 part1_info.ver
+-rw-r--r--    1 root     root            85 Apr 15  2023 part2_info.ver
+drwxr-xr-x    3 root     root           368 Feb 13 02:39 pnp
+-rw-r--r--    1 root     root          4096 Feb 18 05:03 random_seed
+-rw-r--r--    1 root     root             3 Apr 15  2023 rxtx_mode
+drwxr-xr-x    2 root     root           648 Apr 15  2023 ssh
+-rw-r--r--    1 root     root            40 Apr 15  2023 stable_secret_seed
+drwxr-xr-x    3 support  root           224 Apr 15  2023 support
+drwxr-xr-x    2 root     root          4232 Feb 18 05:23 syslogs
+-rw-r--r--    1 root     root           464 Jan  1  1970 wipeout-log
+-rw-r--r--    1 root     root             1 Feb 18 04:59 wips_adminstate_capwap
+---------------------------------------------------------------------------
+Filesystem                Size      Used Available Use% Mounted on
+/dev/ubivol/part2       387.8M     86.9M    296.2M  23% /part2
+
+
+
+<cmd string='show flash | i cnssdaemon.log'>
+	show flash | i cnssdaemon.log
+-rw-r--r--    1 root     root      21762426 Feb 18 07:06 cnssdaemon.log
+
+
+<cmd string='show boot'>
+	show boot
+
+--- Boot Variable Table ---
+BOOT path-list:      part1
+Console Baudrate:    9600
+Enable Break:        
+Manual Boot:         no
+Memory Debug:        no
+Crashkernel:         no
+SCRUB_LIMIT:         40 (default)
+Kdump Limit:         0
+Kdump Collected:     0
+Debug init:          0
+---- Critical Applications UP timestamp ---
+#This file contains EVENT, TIME(in seconds since boot)
+SYSTEMD-START-ubifs_reformat_mount: [34.85]
+SYSTEMD-START-mountfs: [35.96]
+MOUNTFS-START: [36.12]
+MOUNTFS-END: [36.60]
+SYSTEMD-START-system_time_start: [36.76]
+SYSTEMD-START-generate_platforms: [36.82]
+SYSTEMD-START-fipscheck: [36.89]
+SYSTEMD-START-cisco-seed: [36.94]
+SYSTEMD-START-S10boot: [39.92]
+SYSTEMD-START-system_time_stop: [39.99]
+SYSTEMD-START-act2check: [40.06]
+SYSTEMD-START-pkginstall: [40.13]
+SYSTEMD-START-S15nss: [47.09]
+SYSTEMD-START-nolan: [47.34]
+SYSTEMD-START-nolan_usb: [47.62]
+SYSTEMD-START-S15kclick: [47.68]
+SYSTEMD-START-S15platform: [47.73]
+SYSTEMD-START-pre_poe_neg: [48.04]
+SYSTEMD-START-S16mod_load: [49.03]
+SYSTEMD-START-sysctl: [49.33]
+SYSTEMD-START-me-ewlc: [49.38]
+SYSTEMD-START-S18cisco: [49.44]
+SYSTEMD-START-act2_init: [50.85]
+SYSTEMD-START-S16platform: [50.98]
+SYSTEMD-START-rsyslog: [51.11]
+SYSTEMD-START-synclogd: [51.33]
+SYSTEMD-START-brain: [51.40]
+CAPWAP_BRAIN_START: [51.53]
+SYSTEMD-START-powerd: [51.87]
+CAPWAP_BRAIN_CLICK_GRAPH_INIT_BEGIN: [52.14]
+SYSTEMD-START-pine_scan_aux_radio_tune: [52.53]
+CAPWAP_BRAIN_CLICK_GRAPH_INIT_END: [53.44]
+CAPWAP_BRAIN_LOAD_WIRELESS_DRIVERS_MAIN_BEGIN: [53.46]
+CAPWAP_BRAIN_LOAD_WIRELESS_DRIVERS_MAIN_END: [58.14]
+CAPWAP_BRAIN_LOOP_START: [58.17]
+CAPWAP_BRAIN_BEGIN_INIT_SETUP: [58.22]
+CAPWAP_BRAIN_AUX_RADIO_SETUP_DONE: [61.46]
+CAPWAP_BRAIN_DONE_INIT_SETUP: [62.13]
+SYSTEMD-AUX-UP-pine_scan_aux_radio_tune: [62.67]
+SYSTEMD-START-ntp_proc: [67.70]
+SYSTEMD-START-nssmon: [67.75]
+SYSTEMD-START-printkd: [67.81]
+SYSTEMD-START-klogd: [68.24]
+SYSTEMD-START-env_sensors: [69.22]
+SYSTEMD-START-sshd: [69.78]
+SYSTEMD-START-wcpd: [70.45]
+SYSTEMD-START-capwapd: [70.68]
+SYSTEMD-START-led: [70.88]
+SYSTEMD-START-ble: [71.00]
+SYSTEMD-START-cisco-kexec: [71.03]
+SYSTEMD-START-image_updater: [71.15]
+GOT IP[192.168.0.164]: [72.29]
+SYSTEMD-START-system_monitor: [72.53]
+SYSTEMD-START-hostapd: [74.80]
+SYSTEMD-START-cleanair: [74.82]
+SYSTEMD-START-aptraced: [74.82]
+SYSTEMD-START-dnsmasq: [74.83]
+SYSTEMD-START-rtd: [74.83]
+SYSTEMD-START-grpc: [74.86]
+SYSTEMD-START-dnsmasq: [75.13]
+SYSTEMD-START-dhcpv6: [78.87]
+SYSTEMD-START-fastcgi: [81.42]
+SYSTEMD-START-rangingd.service: [82.16]
+SYSTEMD-START-ftm_capability.service: [87.15]
+CAPWAP-STATE[Init]: [87.74]
+CAPWAP-STATE[Discovery]: [87.76]
+SYSTEMD-START-dhcpv6: [88.24]
+CAPWAP-STATE[Discovery]: [89.38]
+CAPWAP-STATE[Discovery]: [99.26]
+SYSTEMD-START-dhcpv6: [99.47]
+CAPWAP-STATE[Discovery]: [109.26]
+SYSTEMD-START-dhcpv6: [109.58]
+CAPWAP-STATE[Discovery]: [119.27]
+SYSTEMD-START-dhcpv6: [119.36]
+SYSTEMD-START-dhcpv6: [125.37]
+CAPWAP-STATE[Discovery]: [129.27]
+SYSTEMD-START-dhcpv6: [129.73]
+CAPWAP-STATE[DTLS Setup]: [139.29]
+CAPWAP-STATE[Join]: [140.39]
+CAPWAP-STATE[Image Data]: [141.28]
+CAPWAP-STATE[Configure]: [141.40]
+SYSTEMD-END-pine_scan_aux_radio_tune: [142.22]
+CAPWAP-STATE[Run]: [142.45]
+SYSTEMD-START-rsyslog: [143.27]
+
+
+<cmd string='show filesystems'>
+	show filesystems
+Filesystem                Size      Used Available Use% Mounted on
+devtmpfs                871.9M         0    871.9M   0% /dev
+/sysroot                874.7M    207.0M    667.7M  24% /
+tmpfs                     1.0M     56.0K    968.0K   5% /dev/shm
+tmpfs                   874.7M         0    874.7M   0% /run
+tmpfs                   874.7M         0    874.7M   0% /sys/fs/cgroup
+/dev/ubivol/part1       278.3M     77.3M    196.3M  28% /part1
+/dev/ubivol/part2       387.8M     86.9M    296.2M  23% /part2
+none                    140.0M      3.8M    136.2M   3% /tmp
+none                      1.0M     56.0K    968.0K   5% /dev/shm
+tmpfs                   135.0M         0    135.0M   0% /mnt/tmp_radio1_core
+
+
+<cmd string='show image integrity'>
+	show image integrity
+/part1(primary) 17.12.6.28
+    part.bin : Good
+    ramfs_data_cisco.squashfs : Good
+    iox.tar.gz : Good
+/part2(Backup) 17.12.0.39
+    part.bin : Good
+    ramfs_data_cisco.squashfs : Good
+    iox.tar.gz : Good
+
+<run timestamp='2026-02-18T12:39:34.291451' device='cos_qca' hostname='CW9166' model='CW9166D1-B' version='17.12.6.28' Ip='192.168.0.164' SN='KWC271505R1'>
+
+<cmd string='show clock'>
+	show clock
+*07:09:33 UTC Wed Feb 18 2026
+
+
+<cmd string='show version'>
+	show version
+             Restricted Rights Legend
+
+Use, duplication, or disclosure by the Government is subject to
+restrictions as set forth in subparagraph (c) of the Commercial
+Computer Software - Restricted Rights clause at FAR sec. 52.227-19 and
+subparagraph (c) (1) (ii) of the Rights in Technical Data and Computer
+Software clause at DFARS sec. 252.227-7013.
+
+            Cisco Systems, Inc.
+            170 West Tasman Drive
+            San Jose, California 95134-1706
+
+This product contains cryptographic features and is subject to United
+States and local country laws governing import, export, transfer and
+use. Delivery of Cisco cryptographic products does not imply
+third-party authority to import, export, distribute or use encryption.
+Importers, exporters, distributors and users are responsible for
+compliance with U.S. and local country laws. By using this product you
+agree to comply with applicable laws and regulations. If you are unable
+to comply with U.S. and local laws, return this product immediately.
+
+A summary of U.S. laws governing Cisco cryptographic products may be found at:
+http://www.cisco.com/wwl/export/crypto/tool/stqrg.html
+
+If you require further assistance please contact us by sending email to
+export@cisco.com.
+
+This product contains some software licensed under the
+"GNU General Public License, version 2" provided with
+ABSOLUTELY NO WARRANTY under the terms of
+"GNU General Public License, version 2", available here:
+http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+
+This product contains some software licensed under the
+"GNU Library General Public License, version 2" provided
+with ABSOLUTELY NO WARRANTY under the terms of "GNU Library
+General Public License, version 2", available here:
+http://www.gnu.org/licenses/old-licenses/lgpl-2.0.html
+
+This product contains some software licensed under the
+"GNU Lesser General Public License, version 2.1" provided
+with ABSOLUTELY NO WARRANTY under the terms of "GNU Lesser
+General Public License, version 2.1", available here:
+http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+
+This product contains some software licensed under the 
+"GNU General Public License, version 3" provided with 
+ABSOLUTELY NO WARRANTY under the terms of  
+"GNU General Public License, Version 3", available here: 
+http://www.gnu.org/licenses/gpl.html.
+
+This product contains some software licensed under the
+"GNU Affero General Public License, version 3" provided
+with ABSOLUTELY NO WARRANTY under the terms of
+"GNU Affero General Public License, version 3", available here:
+http://www.gnu.org/licenses/agpl-3.0.html.
+
+Cisco AP Software, (ap1g6a), C91661, RELEASE SOFTWARE
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2026 by Cisco Systems, Inc.
+Compiled Tue Aug 26 12:15:14 GMT 2025
+
+ROM: Bootstrap program is U-Boot boot loader
+BOOTLDR: U-Boot boot loader Version 2023050509
+TZ: Trustzone Version CRM-TZ.BF.4.0.8-00209
+
+CW9166 uptime is 0 days, 2 hours, 12 minutes
+Last reload time   : Fri Feb 13 02:40:05 UTC 2026
+Last reload reason : unknown
+ 
+cisco CW9166D1-B ARMv8 Processor rev 4 (v8l) with 1791460/648408K bytes of memory.
+Processor board ID KWC271505R1
+AP Running Image     : 17.12.6.28
+Primary Boot Image   : 17.12.6.28
+Backup Boot Image    : 17.12.0.39
+Primary Boot Image Hash: 9f0d166bb1c3ef955c25ce481e48a332d5b95017ca3cd3d1c08d1c6931c78fa6e62dfb042758827ac6f7b09d311fd022b222028233b17c1ad81728779386536c
+Backup  Boot Image Hash: 
+1 Multigigabit Ethernet interfaces
+3 802.11 Radios
+1 Bluetooth Low Energy Radio (EFR32MG21)
+Radio FW version : QC_IMAGE_VERSION_STRING=WLAN.HK.2.7-04674-QCAHKSWPL_SILICONZ-1
+NSS FW version : NSS.FW.12.0-custom-HK.E_custC
+
+Base ethernet MAC Address            : 68:49:92:7A:3E:30
+Part Number                          : 0-0000-00
+PCA Assembly Number                  : 074-126728-01
+PCA Revision Number                  : A0
+PCB Serial Number                    : KWC271505R1
+Top Assembly Part Number             : 074-126728-01
+Top Assembly Serial Number           : KWC271505R1
+Top Revision Number                  : A0
+Product/Model Number                 : CW9166D1-B          
+Cloud ID                             : Q5AH-BF2X-ZFLH
+
+
+
+<cmd string='show flash'>
+	show flash
+Directory of /storage/
+total 21496K
+-rw-r--r--    1 root     root             2 Feb 13 02:40 2G_BEfilter
+-rw-r--r--    1 root     root             3 Feb 13 02:40 BOOT_COUNT
+-rw-r--r--    1 root     root             3 Feb 13 02:40 BOOT_COUNT.reserve
+-rw-r--r--    1 root     root             4 Feb 18 04:59 CDUMP_COUNT
+-rw-r--r--    1 root     root            11 Feb 13 02:40 COOKIE_PID
+-rw-r--r--    1 root     root            29 Feb 13 02:40 RELOADED_AT_UTC
+-rw-r--r--    1 root     root            12 Feb 13 02:40 TOP_ASSEMBLY_SNUMBER
+-rw-r--r--    1 root     root         63100 Feb 13 02:39 after-upgrade.log
+drwxr-xr-x    2 rsyncuse root           160 Feb 13 02:40 application
+-rw-r--r--    1 root     root          5866 Feb 18 04:59 base_capwap_cfg_info
+-rw-r--r--    1 root     root         60354 Feb 13 02:39 before-upgrade.log
+-rw-r--r--    1 root     root             2 Apr 15  2023 boot_debug
+-rw-r--r--    1 root     root          5272 Feb 13 02:40 bootloader.log
+-rw-r--r--    1 root     root             0 Apr 15  2023 check_ap_move
+-rw-r--r--    1 root     root      21773754 Feb 18 07:09 cnssdaemon.log
+-rw-r--r--    1 root     root            18 Apr 15  2023 config
+-rw-r--r--    1 root     root          8346 Feb 18 04:59 config.flex
+-rw-r--r--    1 root     root             0 Feb 18 04:59 config.flex.mgroup
+-rw-r--r--    1 root     root             0 Feb 13 02:40 config.local
+-rw-r--r--    1 root     root            47 Feb 13 02:40 config.mobexp
+-rw-r--r--    1 root     root             0 Feb 13 02:40 config.oeap
+-rw-r--r--    1 root     root             0 Feb 18 04:59 config.ranging
+-rw-r--r--    1 root     root           883 Feb 18 06:30 config.wireless
+drwxr-xr-x    2 root     root           160 Jan  1  1970 cores
+drwxr-xr-x    2 root     root           160 Jan  1  1970 firmware
+-rw-r--r--    1 root     root             0 Feb 18 04:59 geoloc.data
+-rw-r--r--    1 root     root           158 Feb 18 04:58 iot_status_ttyiot0.txt
+-rw-r--r--    1 root     root           261 Feb 13 02:40 last_good_uplink_config
+drwxr-xr-x    2 root     root           160 Jan  1  1970 lists
+-rw-r--r--    1 root     root           237 Feb 13 02:39 part1_info.ver
+-rw-r--r--    1 root     root            85 Apr 15  2023 part2_info.ver
+drwxr-xr-x    3 root     root           368 Feb 13 02:39 pnp
+-rw-r--r--    1 root     root          4096 Feb 18 05:03 random_seed
+-rw-r--r--    1 root     root             3 Apr 15  2023 rxtx_mode
+drwxr-xr-x    2 root     root           648 Apr 15  2023 ssh
+-rw-r--r--    1 root     root            40 Apr 15  2023 stable_secret_seed
+drwxr-xr-x    3 support  root           224 Apr 15  2023 support
+drwxr-xr-x    2 root     root          4232 Feb 18 05:23 syslogs
+-rw-r--r--    1 root     root           464 Jan  1  1970 wipeout-log
+-rw-r--r--    1 root     root             1 Feb 18 04:59 wips_adminstate_capwap
+---------------------------------------------------------------------------
+Filesystem                Size      Used Available Use% Mounted on
+/dev/ubivol/part2       387.8M     86.9M    296.2M  23% /part2
+
+
+
+<cmd string='show flash | i cnssdaemon.log'>
+	show flash | i cnssdaemon.log
+-rw-r--r--    1 root     root      21773754 Feb 18 07:09 cnssdaemon.log
+
+
+<cmd string='show boot'>
+	show boot
+
+--- Boot Variable Table ---
+BOOT path-list:      part1
+Console Baudrate:    9600
+Enable Break:        
+Manual Boot:         no
+Memory Debug:        no
+Crashkernel:         no
+SCRUB_LIMIT:         40 (default)
+Kdump Limit:         0
+Kdump Collected:     0
+Debug init:          0
+---- Critical Applications UP timestamp ---
+#This file contains EVENT, TIME(in seconds since boot)
+SYSTEMD-START-ubifs_reformat_mount: [34.85]
+SYSTEMD-START-mountfs: [35.96]
+MOUNTFS-START: [36.12]
+MOUNTFS-END: [36.60]
+SYSTEMD-START-system_time_start: [36.76]
+SYSTEMD-START-generate_platforms: [36.82]
+SYSTEMD-START-fipscheck: [36.89]
+SYSTEMD-START-cisco-seed: [36.94]
+SYSTEMD-START-S10boot: [39.92]
+SYSTEMD-START-system_time_stop: [39.99]
+SYSTEMD-START-act2check: [40.06]
+SYSTEMD-START-pkginstall: [40.13]
+SYSTEMD-START-S15nss: [47.09]
+SYSTEMD-START-nolan: [47.34]
+SYSTEMD-START-nolan_usb: [47.62]
+SYSTEMD-START-S15kclick: [47.68]
+SYSTEMD-START-S15platform: [47.73]
+SYSTEMD-START-pre_poe_neg: [48.04]
+SYSTEMD-START-S16mod_load: [49.03]
+SYSTEMD-START-sysctl: [49.33]
+SYSTEMD-START-me-ewlc: [49.38]
+SYSTEMD-START-S18cisco: [49.44]
+SYSTEMD-START-act2_init: [50.85]
+SYSTEMD-START-S16platform: [50.98]
+SYSTEMD-START-rsyslog: [51.11]
+SYSTEMD-START-synclogd: [51.33]
+SYSTEMD-START-brain: [51.40]
+CAPWAP_BRAIN_START: [51.53]
+SYSTEMD-START-powerd: [51.87]
+CAPWAP_BRAIN_CLICK_GRAPH_INIT_BEGIN: [52.14]
+SYSTEMD-START-pine_scan_aux_radio_tune: [52.53]
+CAPWAP_BRAIN_CLICK_GRAPH_INIT_END: [53.44]
+CAPWAP_BRAIN_LOAD_WIRELESS_DRIVERS_MAIN_BEGIN: [53.46]
+CAPWAP_BRAIN_LOAD_WIRELESS_DRIVERS_MAIN_END: [58.14]
+CAPWAP_BRAIN_LOOP_START: [58.17]
+CAPWAP_BRAIN_BEGIN_INIT_SETUP: [58.22]
+CAPWAP_BRAIN_AUX_RADIO_SETUP_DONE: [61.46]
+CAPWAP_BRAIN_DONE_INIT_SETUP: [62.13]
+SYSTEMD-AUX-UP-pine_scan_aux_radio_tune: [62.67]
+SYSTEMD-START-ntp_proc: [67.70]
+SYSTEMD-START-nssmon: [67.75]
+SYSTEMD-START-printkd: [67.81]
+SYSTEMD-START-klogd: [68.24]
+SYSTEMD-START-env_sensors: [69.22]
+SYSTEMD-START-sshd: [69.78]
+SYSTEMD-START-wcpd: [70.45]
+SYSTEMD-START-capwapd: [70.68]
+SYSTEMD-START-led: [70.88]
+SYSTEMD-START-ble: [71.00]
+SYSTEMD-START-cisco-kexec: [71.03]
+SYSTEMD-START-image_updater: [71.15]
+GOT IP[192.168.0.164]: [72.29]
+SYSTEMD-START-system_monitor: [72.53]
+SYSTEMD-START-hostapd: [74.80]
+SYSTEMD-START-cleanair: [74.82]
+SYSTEMD-START-aptraced: [74.82]
+SYSTEMD-START-dnsmasq: [74.83]
+SYSTEMD-START-rtd: [74.83]
+SYSTEMD-START-grpc: [74.86]
+SYSTEMD-START-dnsmasq: [75.13]
+SYSTEMD-START-dhcpv6: [78.87]
+SYSTEMD-START-fastcgi: [81.42]
+SYSTEMD-START-rangingd.service: [82.16]
+SYSTEMD-START-ftm_capability.service: [87.15]
+CAPWAP-STATE[Init]: [87.74]
+CAPWAP-STATE[Discovery]: [87.76]
+SYSTEMD-START-dhcpv6: [88.24]
+CAPWAP-STATE[Discovery]: [89.38]
+CAPWAP-STATE[Discovery]: [99.26]
+SYSTEMD-START-dhcpv6: [99.47]
+CAPWAP-STATE[Discovery]: [109.26]
+SYSTEMD-START-dhcpv6: [109.58]
+CAPWAP-STATE[Discovery]: [119.27]
+SYSTEMD-START-dhcpv6: [119.36]
+SYSTEMD-START-dhcpv6: [125.37]
+CAPWAP-STATE[Discovery]: [129.27]
+SYSTEMD-START-dhcpv6: [129.73]
+CAPWAP-STATE[DTLS Setup]: [139.29]
+CAPWAP-STATE[Join]: [140.39]
+CAPWAP-STATE[Image Data]: [141.28]
+CAPWAP-STATE[Configure]: [141.40]
+SYSTEMD-END-pine_scan_aux_radio_tune: [142.22]
+CAPWAP-STATE[Run]: [142.45]
+SYSTEMD-START-rsyslog: [143.27]
+
+
+<cmd string='show filesystems'>
+	show filesystems
+Filesystem                Size      Used Available Use% Mounted on
+devtmpfs                871.9M         0    871.9M   0% /dev
+/sysroot                874.7M    207.0M    667.7M  24% /
+tmpfs                     1.0M     56.0K    968.0K   5% /dev/shm
+tmpfs                   874.7M         0    874.7M   0% /run
+tmpfs                   874.7M         0    874.7M   0% /sys/fs/cgroup
+/dev/ubivol/part1       278.3M     77.3M    196.3M  28% /part1
+/dev/ubivol/part2       387.8M     86.9M    296.2M  23% /part2
+none                    140.0M      4.0M    136.0M   3% /tmp
+none                      1.0M     56.0K    968.0K   5% /dev/shm
+tmpfs                   135.0M         0    135.0M   0% /mnt/tmp_radio1_core
+
+
+<cmd string='show image integrity'>
+	show image integrity
+/part1(primary) 17.12.6.28
+    part.bin : Good
+    ramfs_data_cisco.squashfs : Good
+    iox.tar.gz : Good
+/part2(Backup) 17.12.0.39
+    part.bin : Good
+    ramfs_data_cisco.squashfs : Good
+    iox.tar.gz : Good
+

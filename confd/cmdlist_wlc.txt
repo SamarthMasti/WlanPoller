@@ -1,0 +1,3 @@
+show ap tag summ
+show ver
+show inventory

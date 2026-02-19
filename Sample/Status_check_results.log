@@ -1,0 +1,4 @@
+AP Name	AP Model	Model Susceptible	CNSS Log	Primary Buggy	Backup Buggy	Boot Partition	Integrity Failed	Part2 Mem (MB)	Mem < 80MB	Final Recovery
+======================================================================================================================================================
+CW9166	(ap1g6a)	True	True	True	False	part1	False	296.3	False	
+CW9166D1-B	(ap1g6a)	True	True	True	False	part1	False	296.3	False	

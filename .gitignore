@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+data/
+confd/config.ini
+venv/
+build/
+dist/

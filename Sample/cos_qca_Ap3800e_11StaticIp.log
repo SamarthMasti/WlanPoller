@@ -1,0 +1,936 @@
+<run timestamp='2026-02-18T10:48:08.898422' device='cos_qca' hostname='Ap3800e_11StaticIp' model='AIR-AP3802E-A-K9' version='17.12.6.28' Ip='192.168.0.213' SN='FJC2214M0CZ'>
+
+<cmd string='show version'>
+	show version
+             Restricted Rights Legend
+
+Use, duplication, or disclosure by the Government is subject to
+restrictions as set forth in subparagraph (c) of the Commercial
+Computer Software - Restricted Rights clause at FAR sec. 52.227-19 and
+subparagraph (c) (1) (ii) of the Rights in Technical Data and Computer
+Software clause at DFARS sec. 252.227-7013.
+
+            Cisco Systems, Inc.
+            170 West Tasman Drive
+            San Jose, California 95134-1706
+
+This product contains cryptographic features and is subject to United
+States and local country laws governing import, export, transfer and
+use. Delivery of Cisco cryptographic products does not imply
+third-party authority to import, export, distribute or use encryption.
+Importers, exporters, distributors and users are responsible for
+compliance with U.S. and local country laws. By using this product you
+agree to comply with applicable laws and regulations. If you are unable
+to comply with U.S. and local laws, return this product immediately.
+
+A summary of U.S. laws governing Cisco cryptographic products may be found at:
+http://www.cisco.com/wwl/export/crypto/tool/stqrg.html
+
+If you require further assistance please contact us by sending email to
+export@cisco.com.
+
+This product contains some software licensed under the
+"GNU General Public License, version 2" provided with
+ABSOLUTELY NO WARRANTY under the terms of
+"GNU General Public License, version 2", available here:
+http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+
+This product contains some software licensed under the
+"GNU Library General Public License, version 2" provided
+with ABSOLUTELY NO WARRANTY under the terms of "GNU Library
+General Public License, version 2", available here:
+http://www.gnu.org/licenses/old-licenses/lgpl-2.0.html
+
+This product contains some software licensed under the
+"GNU Lesser General Public License, version 2.1" provided
+with ABSOLUTELY NO WARRANTY under the terms of "GNU Lesser
+General Public License, version 2.1", available here:
+http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+
+This product contains some software licensed under the 
+"GNU General Public License, version 3" provided with 
+ABSOLUTELY NO WARRANTY under the terms of  
+"GNU General Public License, Version 3", available here: 
+http://www.gnu.org/licenses/gpl.html.
+
+This product contains some software licensed under the
+"GNU Affero General Public License, version 3" provided
+with ABSOLUTELY NO WARRANTY under the terms of
+"GNU Affero General Public License, version 3", available here:
+http://www.gnu.org/licenses/agpl-3.0.html.
+
+Cisco AP Software, (ap3g3), C3802, RELEASE SOFTWARE
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2026 by Cisco Systems, Inc.
+Compiled Tue Aug 26 11:51:29 GMT 2025
+
+ROM: Bootstrap program is U-Boot boot loader
+BOOTLDR: U-Boot boot loader Version 2013.01-ge1c49d93a (Jul 28 2023 - 09:08:14)
+
+Ap3800e_11StaticIp uptime is 0 days, 0 hours, 20 minutes
+Last reload time   : Sun Feb 1 01:38:34 UTC 2026
+Last reload reason : unknown
+ 
+cisco AIR-AP3802E-A-K9 ARMv7 Processor rev 1 (v7l) with 1028192/583780K bytes of memory.
+Processor board ID FJC2214M0CZ
+AP Running Image     : 17.12.6.28
+Primary Boot Image   : 17.12.6.28
+Backup Boot Image    : 8.8.1.10
+Primary Boot Image Hash: 15abf5b7e4dfcf51042201677d8f46533bce682948a0c9818b8a16581fd6f7379837c5ba8f6793370a85dc6a4412723fdd2e6850c86b0e48712a0d00f7d9dd07
+Backup  Boot Image Hash: efb6b7e4b3e668091ae4fc4f0fa02a97a78f0e7f325f18b60ddaff0f7e382dc091b6400f0960ab373164760a89ecd908f8411f43a2c54aed2ac2bedd5d5f25d8
+1 Multigigabit Ethernet interfaces
+1 Gigabit Ethernet interfaces
+2 802.11 Radios
+Radio Driver version : 9.0.5.5-W8964
+Radio FW version : 9.1.8.1
+NSS FW version : 2.4.32
+
+Base ethernet MAC Address            : 78:72:5D:1C:2C:10
+Part Number                          : 73-018633-02
+PCA Assembly Number                  : 000-00000-00
+PCA Revision Number                  : 
+PCB Serial Number                    : FOC22104JDE
+Top Assembly Part Number             : 068-100532-04
+Top Assembly Serial Number           : FJC2214M0CZ
+Top Revision Number                  : C0
+Product/Model Number                 : AIR-AP3802E-A-K9    
+
+
+
+<run timestamp='2026-02-18T10:59:51.648419' device='cos_qca' hostname='Ap3800e_11StaticIp' model='AIR-AP3802E-A-K9' version='17.12.6.28' Ip='192.168.0.213' SN='FJC2214M0CZ'>
+
+<cmd string='show clock'>
+	show clock
+*05:29:50 UTC Wed Feb 18 2026
+
+
+<cmd string='show version'>
+	show version
+             Restricted Rights Legend
+
+Use, duplication, or disclosure by the Government is subject to
+restrictions as set forth in subparagraph (c) of the Commercial
+Computer Software - Restricted Rights clause at FAR sec. 52.227-19 and
+subparagraph (c) (1) (ii) of the Rights in Technical Data and Computer
+Software clause at DFARS sec. 252.227-7013.
+
+            Cisco Systems, Inc.
+            170 West Tasman Drive
+            San Jose, California 95134-1706
+
+This product contains cryptographic features and is subject to United
+States and local country laws governing import, export, transfer and
+use. Delivery of Cisco cryptographic products does not imply
+third-party authority to import, export, distribute or use encryption.
+Importers, exporters, distributors and users are responsible for
+compliance with U.S. and local country laws. By using this product you
+agree to comply with applicable laws and regulations. If you are unable
+to comply with U.S. and local laws, return this product immediately.
+
+A summary of U.S. laws governing Cisco cryptographic products may be found at:
+http://www.cisco.com/wwl/export/crypto/tool/stqrg.html
+
+If you require further assistance please contact us by sending email to
+export@cisco.com.
+
+This product contains some software licensed under the
+"GNU General Public License, version 2" provided with
+ABSOLUTELY NO WARRANTY under the terms of
+"GNU General Public License, version 2", available here:
+http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+
+This product contains some software licensed under the
+"GNU Library General Public License, version 2" provided
+with ABSOLUTELY NO WARRANTY under the terms of "GNU Library
+General Public License, version 2", available here:
+http://www.gnu.org/licenses/old-licenses/lgpl-2.0.html
+
+This product contains some software licensed under the
+"GNU Lesser General Public License, version 2.1" provided
+with ABSOLUTELY NO WARRANTY under the terms of "GNU Lesser
+General Public License, version 2.1", available here:
+http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+
+This product contains some software licensed under the 
+"GNU General Public License, version 3" provided with 
+ABSOLUTELY NO WARRANTY under the terms of  
+"GNU General Public License, Version 3", available here: 
+http://www.gnu.org/licenses/gpl.html.
+
+This product contains some software licensed under the
+"GNU Affero General Public License, version 3" provided
+with ABSOLUTELY NO WARRANTY under the terms of
+"GNU Affero General Public License, version 3", available here:
+http://www.gnu.org/licenses/agpl-3.0.html.
+
+Cisco AP Software, (ap3g3), C3802, RELEASE SOFTWARE
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2026 by Cisco Systems, Inc.
+Compiled Tue Aug 26 11:51:29 GMT 2025
+
+ROM: Bootstrap program is U-Boot boot loader
+BOOTLDR: U-Boot boot loader Version 2013.01-ge1c49d93a (Jul 28 2023 - 09:08:14)
+
+Ap3800e_11StaticIp uptime is 0 days, 0 hours, 32 minutes
+Last reload time   : Sun Feb 1 01:38:34 UTC 2026
+Last reload reason : unknown
+ 
+cisco AIR-AP3802E-A-K9 ARMv7 Processor rev 1 (v7l) with 1028192/583388K bytes of memory.
+Processor board ID FJC2214M0CZ
+AP Running Image     : 17.12.6.28
+Primary Boot Image   : 17.12.6.28
+Backup Boot Image    : 8.8.1.10
+Primary Boot Image Hash: 15abf5b7e4dfcf51042201677d8f46533bce682948a0c9818b8a16581fd6f7379837c5ba8f6793370a85dc6a4412723fdd2e6850c86b0e48712a0d00f7d9dd07
+Backup  Boot Image Hash: efb6b7e4b3e668091ae4fc4f0fa02a97a78f0e7f325f18b60ddaff0f7e382dc091b6400f0960ab373164760a89ecd908f8411f43a2c54aed2ac2bedd5d5f25d8
+1 Multigigabit Ethernet interfaces
+1 Gigabit Ethernet interfaces
+2 802.11 Radios
+Radio Driver version : 9.0.5.5-W8964
+Radio FW version : 9.1.8.1
+NSS FW version : 2.4.32
+
+Base ethernet MAC Address            : 78:72:5D:1C:2C:10
+Part Number                          : 73-018633-02
+PCA Assembly Number                  : 000-00000-00
+PCA Revision Number                  : 
+PCB Serial Number                    : FOC22104JDE
+Top Assembly Part Number             : 068-100532-04
+Top Assembly Serial Number           : FJC2214M0CZ
+Top Revision Number                  : C0
+Product/Model Number                 : AIR-AP3802E-A-K9    
+
+
+
+
+<cmd string='show flash'>
+	show flash
+Directory of /storage/
+total 276K
+-rw-r--r--    1 root     root             5 Feb  1 01:38 BOOT_COUNT
+-rw-r--r--    1 root     root             5 Feb  1 01:38 BOOT_COUNT.reserve
+-rw-r--r--    1 root     root             4 Feb 18 05:00 CDUMP_COUNT
+-rw-r--r--    1 root     root            17 Feb  1 01:39 COOKIE_PID
+-rw-r--r--    1 root     root             6 Feb  1 01:38 EXPECTED_BOOT
+-rw-r--r--    1 root     root            35 Jan 18 11:51 IMAGE_INTEGRITY
+lrwxrwxrwx    1 root     root            31 Sep 25  2020 PERS_CRASH_LOG -> /storage/syslogs/1394.crash_log
+-rw-r--r--    1 root     root            28 Feb  1 01:38 RELOADED_AT_UTC
+-rw-r--r--    1 root     root            12 Feb  1 01:39 TOP_ASSEMBLY_SNUMBER
+-rw-r--r--    1 root     root         42307 Feb  1 01:38 after-upgrade.log
+drwxr-xr-x    2 root     root           160 May 21  2019 ap-images
+drwxr-xr-x    4 rsyncuse root          2496 Feb  1 01:39 application
+-rw-r--r--    1 root     root          4327 Feb 18 05:00 base_capwap_cfg_info
+-rw-r--r--    1 root     root         62788 Jan 18 11:50 before-upgrade.log
+-rw-r--r--    1 root     root            20 Dec 10  2021 bigacl
+-rw-r--r--    1 root     root             2 Jul 15  2020 boot_debug
+-rw-r--r--    1 root     root         42656 Feb  1 01:39 bootloader.log
+-rw-r--r--    1 root     root             5 Feb  1 01:38 bootloader_verify.shadow
+-rw-r--r--    1 root     root            18 Sep 18  2024 config
+-rw-r--r--    1 root     root          5766 Feb 18 05:00 config.flex
+-rw-r--r--    1 root     root             0 Feb 18 05:00 config.flex.mgroup
+-rw-r--r--    1 root     root             0 Feb  1 01:38 config.local
+-rw-r--r--    1 root     root             0 Sep 18  2024 config.mesh
+-rw-r--r--    1 root     root            30 Feb  1 01:39 config.mobexp
+-rw-r--r--    1 root     root             0 Feb  1 01:39 config.oeap
+-rw-r--r--    1 root     root             0 Feb 18 05:00 config.ranging
+-rw-r--r--    1 root     root             0 Feb 18 05:00 config.rlan
+-rw-r--r--    1 root     root           383 Feb 18 05:19 config.wireless
+drwxr-xr-x    2 root     root          1056 Sep 18  2024 cores
+drwxr-xr-x    2 root     root           320 Mar 17  2018 dropbear
+-rw-r--r--    1 root     root             0 Feb 18 05:00 geoloc.data
+drwxr-xr-x    2 root     root           160 Feb 12  2019 images
+-rw-r--r--    1 root     root           214 Feb  1 01:57 last_good_uplink_config
+drwxr-xr-x    2 root     root           160 Mar 17  2018 lists
+-rw-r--r--    1 root     root           238 Sep 18  2024 part1_info.ver
+-rw-r--r--    1 root     root           236 Jan 18 11:51 part2_info.ver
+drwxr-xr-x    3 root     root           368 Sep 18  2024 pnp
+-rw-r--r--    1 root     root          4096 Feb 18 05:04 random_seed
+-rw-r--r--    1 root     root             3 Mar 17  2018 rxtx_mode
+-rw-r--r--    1 root     root           128 Feb 18 05:00 sensord_CSPRNG0
+-rw-r--r--    1 root     root            64 Feb 18 05:00 sensord_CSPRNG1
+-rw-r--r--    1 root     root             8 May 16  2019 sensord_crashVer0
+-rw-r--r--    1 root     root             8 May 29  2019 sensord_crashVer1
+drwxr-xr-x    2 root     root           648 Mar  7  2019 ssh
+-rw-r--r--    1 root     root            40 Jun 12  2024 stable_secret_seed
+drwxr-xr-x    3 support  root           224 Mar 17  2018 support
+drwxr-xr-x    2 root     root          4680 Feb 18 05:23 syslogs
+-rw-r--r--    1 root     root           213 Sep 18  2024 wgb_running_config.3802_SW5_151_05
+-rw-r--r--    1 root     root           213 Sep 18  2024 wgb_running_config.3802_SW5_151_05.bak
+-rw-r--r--    1 root     root             1 Feb 18 05:00 wips_adminstate_capwap
+drwxr-xr-x    2 root     root           232 Sep 18  2024 wpagent
+---------------------------------------------------------------------------
+Filesystem                Size      Used Available Use% Mounted on
+flash                    57.5M      4.5M     50.0M   8% /storage
+
+
+
+<cmd string='show flash | i cnssdaemon.log'>
+	show flash | i cnssdaemon.log
+
+
+<cmd string='show boot'>
+	show boot
+
+--- Boot Variable Table ---
+BOOT path-list:      part2
+Console Baudrate:    9600
+Enable Break:        yes
+Manual Boot:         no
+Memory Debug:        no
+Crashkernel:         no
+SCRUB_LIMIT:         40 (default)
+Kdump Limit:         0
+Kdump Collected:     0
+Debug init:          0
+---- Critical Applications UP timestamp ---
+#This file contains EVENT, TIME(in seconds since boot)
+SYSTEMD-START-ubifs_reformat_mount: [38.50]
+SYSTEMD-START-mountfs: [39.00]
+MOUNTFS-START: [39.17]
+MOUNTFS-END: [40.75]
+SYSTEMD-START-system_time_start: [40.93]
+SYSTEMD-START-generate_platforms: [40.99]
+SYSTEMD-START-fipscheck: [41.05]
+SYSTEMD-START-cisco-seed: [41.11]
+SYSTEMD-START-btldr_check: [43.66]
+SYSTEMD-START-act2check: [43.88]
+SYSTEMD-START-pkginstall: [43.94]
+SYSTEMD-START-system_time_stop: [44.25]
+SYSTEMD-START-S10boot: [44.31]
+SYSTEMD-START-act2_init: [66.95]
+SYSTEMD-START-nolan: [67.01]
+SYSTEMD-START-S15nss: [67.07]
+SYSTEMD-START-nolan_usb: [67.49]
+SYSTEMD-START-pre_poe_neg: [67.68]
+SYSTEMD-START-S15platform: [70.46]
+SYSTEMD-START-S15kclick: [70.52]
+SYSTEMD-START-S18cisco: [74.39]
+SYSTEMD-START-sysctl: [74.45]
+SYSTEMD-START-S16mod_load: [74.70]
+SYSTEMD-START-me-ewlc: [74.75]
+SYSTEMD-START-rsyslog: [76.66]
+SYSTEMD-START-S16platform: [76.96]
+SYSTEMD-START-synclogd: [77.09]
+SYSTEMD-START-brain: [77.13]
+CAPWAP_BRAIN_START: [77.22]
+CAPWAP_BRAIN_CLICK_GRAPH_INIT_BEGIN: [77.37]
+SYSTEMD-START-ntp_proc: [77.86]
+SYSTEMD-START-klogd: [77.91]
+SYSTEMD-START-printkd: [78.64]
+CAPWAP_BRAIN_CLICK_GRAPH_INIT_END: [79.44]
+CAPWAP_BRAIN_LOOP_START: [79.46]
+CAPWAP_BRAIN_BEGIN_INIT_SETUP: [79.51]
+SYSTEMD-START-sshd: [81.26]
+CAPWAP_BRAIN_LOAD_WIRELESS_DRIVERS_BEGIN: [90.99]
+CAPWAP_BRAIN_LOAD_WIRELESS_DRIVERS_END: [91.01]
+CAPWAP_BRAIN_DONE_INIT_SETUP: [91.28]
+SYSTEMD-START-mrvlfwd: [91.65]
+GOT IP[192.168.0.213]: [92.15]
+SYSTEMD-START-wcpd: [92.41]
+SYSTEMD-START-capwapd: [103.84]
+SYSTEMD-START-system_monitor: [103.93]
+SYSTEMD-START-cisco-kexec: [103.96]
+SYSTEMD-START-image_updater: [104.04]
+SYSTEMD-START-led: [104.09]
+SYSTEMD-START-dnsmasq: [104.51]
+SYSTEMD-START-aptraced: [104.54]
+SYSTEMD-START-rtd: [104.68]
+SYSTEMD-START-hostapd: [104.84]
+SYSTEMD-START-cleanair: [104.81]
+SYSTEMD-START-grpc: [104.93]
+SYSTEMD-START-fastcgi: [114.09]
+SYSTEMD-START-dhcpv6: [128.59]
+CAPWAP-STATE[Init]: [129.42]
+CAPWAP-STATE[Discovery]: [129.54]
+CAPWAP-STATE[Discovery]: [129.60]
+CAPWAP-STATE[DTLS Setup]: [139.43]
+CAPWAP-STATE[Join]: [140.22]
+CAPWAP-STATE[Image Data]: [141.59]
+CAPWAP-STATE[Configure]: [141.73]
+CAPWAP-STATE[Run]: [144.44]
+SYSTEMD-START-rsyslog: [151.15]
+SYSTEMD-START-dhcpv6: [174.33]
+
+
+<cmd string='show filesystems'>
+	show filesystems
+Filesystem                Size      Used Available Use% Mounted on
+devtmpfs                500.6M         0    500.6M   0% /dev
+/dev/ubivol/storage      57.5M      4.5M     50.0M   8% /storage
+/sysroot                502.0M    124.7M    377.3M  25% /
+tmpfs                     1.0M     56.0K    968.0K   5% /dev/shm
+tmpfs                   502.0M    172.0K    501.9M   0% /run
+tmpfs                   502.0M         0    502.0M   0% /sys/fs/cgroup
+none                    100.0M      2.0M     98.0M   2% /tmp
+none                      1.0M     56.0K    968.0K   5% /dev/shm
+/dev/ubivol/firmware      5.6M    212.0K      5.4M   4% /firmware
+
+
+<cmd string='show image integrity'>
+	show image integrity
+/part1(Backup) 8.8.1.10
+    part.bin : Good
+    ramfs_data_cisco.cpio.lzma : Good
+    iox.tar.gz : Good
+/part2(primary) 17.12.6.28
+    part.bin : Good
+    ramfs_data_cisco.cpio.lzma : Good
+    iox.tar.gz : Good
+
+<run timestamp='2026-02-18T12:36:20.656549' device='cos_qca' hostname='Ap3800e_11StaticIp' model='AIR-AP3802E-A-K9' version='17.12.6.28' Ip='192.168.0.213' SN='FJC2214M0CZ'>
+
+<cmd string='show clock'>
+	show clock
+*07:06:19 UTC Wed Feb 18 2026
+
+
+<cmd string='show version'>
+	show version
+             Restricted Rights Legend
+
+Use, duplication, or disclosure by the Government is subject to
+restrictions as set forth in subparagraph (c) of the Commercial
+Computer Software - Restricted Rights clause at FAR sec. 52.227-19 and
+subparagraph (c) (1) (ii) of the Rights in Technical Data and Computer
+Software clause at DFARS sec. 252.227-7013.
+
+            Cisco Systems, Inc.
+            170 West Tasman Drive
+            San Jose, California 95134-1706
+
+This product contains cryptographic features and is subject to United
+States and local country laws governing import, export, transfer and
+use. Delivery of Cisco cryptographic products does not imply
+third-party authority to import, export, distribute or use encryption.
+Importers, exporters, distributors and users are responsible for
+compliance with U.S. and local country laws. By using this product you
+agree to comply with applicable laws and regulations. If you are unable
+to comply with U.S. and local laws, return this product immediately.
+
+A summary of U.S. laws governing Cisco cryptographic products may be found at:
+http://www.cisco.com/wwl/export/crypto/tool/stqrg.html
+
+If you require further assistance please contact us by sending email to
+export@cisco.com.
+
+This product contains some software licensed under the
+"GNU General Public License, version 2" provided with
+ABSOLUTELY NO WARRANTY under the terms of
+"GNU General Public License, version 2", available here:
+http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+
+This product contains some software licensed under the
+"GNU Library General Public License, version 2" provided
+with ABSOLUTELY NO WARRANTY under the terms of "GNU Library
+General Public License, version 2", available here:
+http://www.gnu.org/licenses/old-licenses/lgpl-2.0.html
+
+This product contains some software licensed under the
+"GNU Lesser General Public License, version 2.1" provided
+with ABSOLUTELY NO WARRANTY under the terms of "GNU Lesser
+General Public License, version 2.1", available here:
+http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+
+This product contains some software licensed under the 
+"GNU General Public License, version 3" provided with 
+ABSOLUTELY NO WARRANTY under the terms of  
+"GNU General Public License, Version 3", available here: 
+http://www.gnu.org/licenses/gpl.html.
+
+This product contains some software licensed under the
+"GNU Affero General Public License, version 3" provided
+with ABSOLUTELY NO WARRANTY under the terms of
+"GNU Affero General Public License, version 3", available here:
+http://www.gnu.org/licenses/agpl-3.0.html.
+
+Cisco AP Software, (ap3g3), C3802, RELEASE SOFTWARE
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2026 by Cisco Systems, Inc.
+Compiled Tue Aug 26 11:51:29 GMT 2025
+
+ROM: Bootstrap program is U-Boot boot loader
+BOOTLDR: U-Boot boot loader Version 2013.01-ge1c49d93a (Jul 28 2023 - 09:08:14)
+
+Ap3800e_11StaticIp uptime is 0 days, 2 hours, 08 minutes
+Last reload time   : Sun Feb 1 01:38:34 UTC 2026
+Last reload reason : unknown
+ 
+cisco AIR-AP3802E-A-K9 ARMv7 Processor rev 1 (v7l) with 1028192/582308K bytes of memory.
+Processor board ID FJC2214M0CZ
+AP Running Image     : 17.12.6.28
+Primary Boot Image   : 17.12.6.28
+Backup Boot Image    : 8.8.1.10
+Primary Boot Image Hash: 15abf5b7e4dfcf51042201677d8f46533bce682948a0c9818b8a16581fd6f7379837c5ba8f6793370a85dc6a4412723fdd2e6850c86b0e48712a0d00f7d9dd07
+Backup  Boot Image Hash: efb6b7e4b3e668091ae4fc4f0fa02a97a78f0e7f325f18b60ddaff0f7e382dc091b6400f0960ab373164760a89ecd908f8411f43a2c54aed2ac2bedd5d5f25d8
+1 Multigigabit Ethernet interfaces
+1 Gigabit Ethernet interfaces
+2 802.11 Radios
+Radio Driver version : 9.0.5.5-W8964
+Radio FW version : 9.1.8.1
+NSS FW version : 2.4.32
+
+Base ethernet MAC Address            : 78:72:5D:1C:2C:10
+Part Number                          : 73-018633-02
+PCA Assembly Number                  : 000-00000-00
+PCA Revision Number                  : 
+PCB Serial Number                    : FOC22104JDE
+Top Assembly Part Number             : 068-100532-04
+Top Assembly Serial Number           : FJC2214M0CZ
+Top Revision Number                  : C0
+Product/Model Number                 : AIR-AP3802E-A-K9    
+
+
+
+
+<cmd string='show flash'>
+	show flash
+Directory of /storage/
+total 276K
+-rw-r--r--    1 root     root             5 Feb  1 01:38 BOOT_COUNT
+-rw-r--r--    1 root     root             5 Feb  1 01:38 BOOT_COUNT.reserve
+-rw-r--r--    1 root     root             4 Feb 18 05:00 CDUMP_COUNT
+-rw-r--r--    1 root     root            17 Feb  1 01:39 COOKIE_PID
+-rw-r--r--    1 root     root             6 Feb  1 01:38 EXPECTED_BOOT
+-rw-r--r--    1 root     root            35 Jan 18 11:51 IMAGE_INTEGRITY
+lrwxrwxrwx    1 root     root            31 Sep 25  2020 PERS_CRASH_LOG -> /storage/syslogs/1394.crash_log
+-rw-r--r--    1 root     root            28 Feb  1 01:38 RELOADED_AT_UTC
+-rw-r--r--    1 root     root            12 Feb  1 01:39 TOP_ASSEMBLY_SNUMBER
+-rw-r--r--    1 root     root         42307 Feb  1 01:38 after-upgrade.log
+drwxr-xr-x    2 root     root           160 May 21  2019 ap-images
+drwxr-xr-x    4 rsyncuse root          2496 Feb  1 01:39 application
+-rw-r--r--    1 root     root          4327 Feb 18 05:00 base_capwap_cfg_info
+-rw-r--r--    1 root     root         62788 Jan 18 11:50 before-upgrade.log
+-rw-r--r--    1 root     root            20 Dec 10  2021 bigacl
+-rw-r--r--    1 root     root             2 Jul 15  2020 boot_debug
+-rw-r--r--    1 root     root         42656 Feb  1 01:39 bootloader.log
+-rw-r--r--    1 root     root             5 Feb  1 01:38 bootloader_verify.shadow
+-rw-r--r--    1 root     root            18 Sep 18  2024 config
+-rw-r--r--    1 root     root          5766 Feb 18 05:00 config.flex
+-rw-r--r--    1 root     root             0 Feb 18 05:00 config.flex.mgroup
+-rw-r--r--    1 root     root             0 Feb  1 01:38 config.local
+-rw-r--r--    1 root     root             0 Sep 18  2024 config.mesh
+-rw-r--r--    1 root     root            30 Feb  1 01:39 config.mobexp
+-rw-r--r--    1 root     root             0 Feb  1 01:39 config.oeap
+-rw-r--r--    1 root     root             0 Feb 18 05:00 config.ranging
+-rw-r--r--    1 root     root             0 Feb 18 05:00 config.rlan
+-rw-r--r--    1 root     root           383 Feb 18 05:19 config.wireless
+drwxr-xr-x    2 root     root          1056 Sep 18  2024 cores
+drwxr-xr-x    2 root     root           320 Mar 17  2018 dropbear
+-rw-r--r--    1 root     root             0 Feb 18 05:00 geoloc.data
+drwxr-xr-x    2 root     root           160 Feb 12  2019 images
+-rw-r--r--    1 root     root           214 Feb  1 01:57 last_good_uplink_config
+drwxr-xr-x    2 root     root           160 Mar 17  2018 lists
+-rw-r--r--    1 root     root           238 Sep 18  2024 part1_info.ver
+-rw-r--r--    1 root     root           236 Jan 18 11:51 part2_info.ver
+drwxr-xr-x    3 root     root           368 Sep 18  2024 pnp
+-rw-r--r--    1 root     root          4096 Feb 18 05:04 random_seed
+-rw-r--r--    1 root     root             3 Mar 17  2018 rxtx_mode
+-rw-r--r--    1 root     root           128 Feb 18 05:00 sensord_CSPRNG0
+-rw-r--r--    1 root     root            64 Feb 18 05:00 sensord_CSPRNG1
+-rw-r--r--    1 root     root             8 May 16  2019 sensord_crashVer0
+-rw-r--r--    1 root     root             8 May 29  2019 sensord_crashVer1
+drwxr-xr-x    2 root     root           648 Mar  7  2019 ssh
+-rw-r--r--    1 root     root            40 Jun 12  2024 stable_secret_seed
+drwxr-xr-x    3 support  root           224 Mar 17  2018 support
+drwxr-xr-x    2 root     root          4680 Feb 18 05:23 syslogs
+-rw-r--r--    1 root     root           213 Sep 18  2024 wgb_running_config.3802_SW5_151_05
+-rw-r--r--    1 root     root           213 Sep 18  2024 wgb_running_config.3802_SW5_151_05.bak
+-rw-r--r--    1 root     root             1 Feb 18 05:00 wips_adminstate_capwap
+drwxr-xr-x    2 root     root           232 Sep 18  2024 wpagent
+---------------------------------------------------------------------------
+Filesystem                Size      Used Available Use% Mounted on
+flash                    57.5M      4.5M     50.0M   8% /storage
+
+
+
+<cmd string='show flash | i cnssdaemon.log'>
+	show flash | i cnssdaemon.log
+
+
+<cmd string='show boot'>
+	show boot
+
+--- Boot Variable Table ---
+BOOT path-list:      part2
+Console Baudrate:    9600
+Enable Break:        yes
+Manual Boot:         no
+Memory Debug:        no
+Crashkernel:         no
+SCRUB_LIMIT:         40 (default)
+Kdump Limit:         0
+Kdump Collected:     0
+Debug init:          0
+---- Critical Applications UP timestamp ---
+#This file contains EVENT, TIME(in seconds since boot)
+SYSTEMD-START-ubifs_reformat_mount: [38.50]
+SYSTEMD-START-mountfs: [39.00]
+MOUNTFS-START: [39.17]
+MOUNTFS-END: [40.75]
+SYSTEMD-START-system_time_start: [40.93]
+SYSTEMD-START-generate_platforms: [40.99]
+SYSTEMD-START-fipscheck: [41.05]
+SYSTEMD-START-cisco-seed: [41.11]
+SYSTEMD-START-btldr_check: [43.66]
+SYSTEMD-START-act2check: [43.88]
+SYSTEMD-START-pkginstall: [43.94]
+SYSTEMD-START-system_time_stop: [44.25]
+SYSTEMD-START-S10boot: [44.31]
+SYSTEMD-START-act2_init: [66.95]
+SYSTEMD-START-nolan: [67.01]
+SYSTEMD-START-S15nss: [67.07]
+SYSTEMD-START-nolan_usb: [67.49]
+SYSTEMD-START-pre_poe_neg: [67.68]
+SYSTEMD-START-S15platform: [70.46]
+SYSTEMD-START-S15kclick: [70.52]
+SYSTEMD-START-S18cisco: [74.39]
+SYSTEMD-START-sysctl: [74.45]
+SYSTEMD-START-S16mod_load: [74.70]
+SYSTEMD-START-me-ewlc: [74.75]
+SYSTEMD-START-rsyslog: [76.66]
+SYSTEMD-START-S16platform: [76.96]
+SYSTEMD-START-synclogd: [77.09]
+SYSTEMD-START-brain: [77.13]
+CAPWAP_BRAIN_START: [77.22]
+CAPWAP_BRAIN_CLICK_GRAPH_INIT_BEGIN: [77.37]
+SYSTEMD-START-ntp_proc: [77.86]
+SYSTEMD-START-klogd: [77.91]
+SYSTEMD-START-printkd: [78.64]
+CAPWAP_BRAIN_CLICK_GRAPH_INIT_END: [79.44]
+CAPWAP_BRAIN_LOOP_START: [79.46]
+CAPWAP_BRAIN_BEGIN_INIT_SETUP: [79.51]
+SYSTEMD-START-sshd: [81.26]
+CAPWAP_BRAIN_LOAD_WIRELESS_DRIVERS_BEGIN: [90.99]
+CAPWAP_BRAIN_LOAD_WIRELESS_DRIVERS_END: [91.01]
+CAPWAP_BRAIN_DONE_INIT_SETUP: [91.28]
+SYSTEMD-START-mrvlfwd: [91.65]
+GOT IP[192.168.0.213]: [92.15]
+SYSTEMD-START-wcpd: [92.41]
+SYSTEMD-START-capwapd: [103.84]
+SYSTEMD-START-system_monitor: [103.93]
+SYSTEMD-START-cisco-kexec: [103.96]
+SYSTEMD-START-image_updater: [104.04]
+SYSTEMD-START-led: [104.09]
+SYSTEMD-START-dnsmasq: [104.51]
+SYSTEMD-START-aptraced: [104.54]
+SYSTEMD-START-rtd: [104.68]
+SYSTEMD-START-hostapd: [104.84]
+SYSTEMD-START-cleanair: [104.81]
+SYSTEMD-START-grpc: [104.93]
+SYSTEMD-START-fastcgi: [114.09]
+SYSTEMD-START-dhcpv6: [128.59]
+CAPWAP-STATE[Init]: [129.42]
+CAPWAP-STATE[Discovery]: [129.54]
+CAPWAP-STATE[Discovery]: [129.60]
+CAPWAP-STATE[DTLS Setup]: [139.43]
+CAPWAP-STATE[Join]: [140.22]
+CAPWAP-STATE[Image Data]: [141.59]
+CAPWAP-STATE[Configure]: [141.73]
+CAPWAP-STATE[Run]: [144.44]
+SYSTEMD-START-rsyslog: [151.15]
+SYSTEMD-START-dhcpv6: [174.33]
+
+
+<cmd string='show filesystems'>
+	show filesystems
+Filesystem                Size      Used Available Use% Mounted on
+devtmpfs                500.6M         0    500.6M   0% /dev
+/dev/ubivol/storage      57.5M      4.5M     50.0M   8% /storage
+/sysroot                502.0M    124.7M    377.3M  25% /
+tmpfs                     1.0M     56.0K    968.0K   5% /dev/shm
+tmpfs                   502.0M    172.0K    501.9M   0% /run
+tmpfs                   502.0M         0    502.0M   0% /sys/fs/cgroup
+none                    100.0M      2.6M     97.4M   3% /tmp
+none                      1.0M     56.0K    968.0K   5% /dev/shm
+/dev/ubivol/firmware      5.6M    212.0K      5.4M   4% /firmware
+
+
+<cmd string='show image integrity'>
+	show image integrity
+/part1(Backup) 8.8.1.10
+    part.bin : Good
+    ramfs_data_cisco.cpio.lzma : Good
+    iox.tar.gz : Good
+/part2(primary) 17.12.6.28
+    part.bin : Good
+    ramfs_data_cisco.cpio.lzma : Good
+    iox.tar.gz : Good
+
+<run timestamp='2026-02-18T12:39:33.134666' device='cos_qca' hostname='Ap3800e_11StaticIp' model='AIR-AP3802E-A-K9' version='17.12.6.28' Ip='192.168.0.213' SN='FJC2214M0CZ'>
+
+<cmd string='show clock'>
+	show clock
+*07:09:32 UTC Wed Feb 18 2026
+
+
+<cmd string='show version'>
+	show version
+             Restricted Rights Legend
+
+Use, duplication, or disclosure by the Government is subject to
+restrictions as set forth in subparagraph (c) of the Commercial
+Computer Software - Restricted Rights clause at FAR sec. 52.227-19 and
+subparagraph (c) (1) (ii) of the Rights in Technical Data and Computer
+Software clause at DFARS sec. 252.227-7013.
+
+            Cisco Systems, Inc.
+            170 West Tasman Drive
+            San Jose, California 95134-1706
+
+This product contains cryptographic features and is subject to United
+States and local country laws governing import, export, transfer and
+use. Delivery of Cisco cryptographic products does not imply
+third-party authority to import, export, distribute or use encryption.
+Importers, exporters, distributors and users are responsible for
+compliance with U.S. and local country laws. By using this product you
+agree to comply with applicable laws and regulations. If you are unable
+to comply with U.S. and local laws, return this product immediately.
+
+A summary of U.S. laws governing Cisco cryptographic products may be found at:
+http://www.cisco.com/wwl/export/crypto/tool/stqrg.html
+
+If you require further assistance please contact us by sending email to
+export@cisco.com.
+
+This product contains some software licensed under the
+"GNU General Public License, version 2" provided with
+ABSOLUTELY NO WARRANTY under the terms of
+"GNU General Public License, version 2", available here:
+http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+
+This product contains some software licensed under the
+"GNU Library General Public License, version 2" provided
+with ABSOLUTELY NO WARRANTY under the terms of "GNU Library
+General Public License, version 2", available here:
+http://www.gnu.org/licenses/old-licenses/lgpl-2.0.html
+
+This product contains some software licensed under the
+"GNU Lesser General Public License, version 2.1" provided
+with ABSOLUTELY NO WARRANTY under the terms of "GNU Lesser
+General Public License, version 2.1", available here:
+http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+
+This product contains some software licensed under the 
+"GNU General Public License, version 3" provided with 
+ABSOLUTELY NO WARRANTY under the terms of  
+"GNU General Public License, Version 3", available here: 
+http://www.gnu.org/licenses/gpl.html.
+
+This product contains some software licensed under the
+"GNU Affero General Public License, version 3" provided
+with ABSOLUTELY NO WARRANTY under the terms of
+"GNU Affero General Public License, version 3", available here:
+http://www.gnu.org/licenses/agpl-3.0.html.
+
+Cisco AP Software, (ap3g3), C3802, RELEASE SOFTWARE
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2026 by Cisco Systems, Inc.
+Compiled Tue Aug 26 11:51:29 GMT 2025
+
+ROM: Bootstrap program is U-Boot boot loader
+BOOTLDR: U-Boot boot loader Version 2013.01-ge1c49d93a (Jul 28 2023 - 09:08:14)
+
+Ap3800e_11StaticIp uptime is 0 days, 2 hours, 11 minutes
+Last reload time   : Sun Feb 1 01:38:34 UTC 2026
+Last reload reason : unknown
+ 
+cisco AIR-AP3802E-A-K9 ARMv7 Processor rev 1 (v7l) with 1028192/582552K bytes of memory.
+Processor board ID FJC2214M0CZ
+AP Running Image     : 17.12.6.28
+Primary Boot Image   : 17.12.6.28
+Backup Boot Image    : 8.8.1.10
+Primary Boot Image Hash: 15abf5b7e4dfcf51042201677d8f46533bce682948a0c9818b8a16581fd6f7379837c5ba8f6793370a85dc6a4412723fdd2e6850c86b0e48712a0d00f7d9dd07
+Backup  Boot Image Hash: efb6b7e4b3e668091ae4fc4f0fa02a97a78f0e7f325f18b60ddaff0f7e382dc091b6400f0960ab373164760a89ecd908f8411f43a2c54aed2ac2bedd5d5f25d8
+1 Multigigabit Ethernet interfaces
+1 Gigabit Ethernet interfaces
+2 802.11 Radios
+Radio Driver version : 9.0.5.5-W8964
+Radio FW version : 9.1.8.1
+NSS FW version : 2.4.32
+
+Base ethernet MAC Address            : 78:72:5D:1C:2C:10
+Part Number                          : 73-018633-02
+PCA Assembly Number                  : 000-00000-00
+PCA Revision Number                  : 
+PCB Serial Number                    : FOC22104JDE
+Top Assembly Part Number             : 068-100532-04
+Top Assembly Serial Number           : FJC2214M0CZ
+Top Revision Number                  : C0
+Product/Model Number                 : AIR-AP3802E-A-K9    
+
+
+
+
+<cmd string='show flash'>
+	show flash
+Directory of /storage/
+total 276K
+-rw-r--r--    1 root     root             5 Feb  1 01:38 BOOT_COUNT
+-rw-r--r--    1 root     root             5 Feb  1 01:38 BOOT_COUNT.reserve
+-rw-r--r--    1 root     root             4 Feb 18 05:00 CDUMP_COUNT
+-rw-r--r--    1 root     root            17 Feb  1 01:39 COOKIE_PID
+-rw-r--r--    1 root     root             6 Feb  1 01:38 EXPECTED_BOOT
+-rw-r--r--    1 root     root            35 Jan 18 11:51 IMAGE_INTEGRITY
+lrwxrwxrwx    1 root     root            31 Sep 25  2020 PERS_CRASH_LOG -> /storage/syslogs/1394.crash_log
+-rw-r--r--    1 root     root            28 Feb  1 01:38 RELOADED_AT_UTC
+-rw-r--r--    1 root     root            12 Feb  1 01:39 TOP_ASSEMBLY_SNUMBER
+-rw-r--r--    1 root     root         42307 Feb  1 01:38 after-upgrade.log
+drwxr-xr-x    2 root     root           160 May 21  2019 ap-images
+drwxr-xr-x    4 rsyncuse root          2496 Feb  1 01:39 application
+-rw-r--r--    1 root     root          4327 Feb 18 05:00 base_capwap_cfg_info
+-rw-r--r--    1 root     root         62788 Jan 18 11:50 before-upgrade.log
+-rw-r--r--    1 root     root            20 Dec 10  2021 bigacl
+-rw-r--r--    1 root     root             2 Jul 15  2020 boot_debug
+-rw-r--r--    1 root     root         42656 Feb  1 01:39 bootloader.log
+-rw-r--r--    1 root     root             5 Feb  1 01:38 bootloader_verify.shadow
+-rw-r--r--    1 root     root            18 Sep 18  2024 config
+-rw-r--r--    1 root     root          5766 Feb 18 05:00 config.flex
+-rw-r--r--    1 root     root             0 Feb 18 05:00 config.flex.mgroup
+-rw-r--r--    1 root     root             0 Feb  1 01:38 config.local
+-rw-r--r--    1 root     root             0 Sep 18  2024 config.mesh
+-rw-r--r--    1 root     root            30 Feb  1 01:39 config.mobexp
+-rw-r--r--    1 root     root             0 Feb  1 01:39 config.oeap
+-rw-r--r--    1 root     root             0 Feb 18 05:00 config.ranging
+-rw-r--r--    1 root     root             0 Feb 18 05:00 config.rlan
+-rw-r--r--    1 root     root           383 Feb 18 05:19 config.wireless
+drwxr-xr-x    2 root     root          1056 Sep 18  2024 cores
+drwxr-xr-x    2 root     root           320 Mar 17  2018 dropbear
+-rw-r--r--    1 root     root             0 Feb 18 05:00 geoloc.data
+drwxr-xr-x    2 root     root           160 Feb 12  2019 images
+-rw-r--r--    1 root     root           214 Feb  1 01:57 last_good_uplink_config
+drwxr-xr-x    2 root     root           160 Mar 17  2018 lists
+-rw-r--r--    1 root     root           238 Sep 18  2024 part1_info.ver
+-rw-r--r--    1 root     root           236 Jan 18 11:51 part2_info.ver
+drwxr-xr-x    3 root     root           368 Sep 18  2024 pnp
+-rw-r--r--    1 root     root          4096 Feb 18 05:04 random_seed
+-rw-r--r--    1 root     root             3 Mar 17  2018 rxtx_mode
+-rw-r--r--    1 root     root           128 Feb 18 05:00 sensord_CSPRNG0
+-rw-r--r--    1 root     root            64 Feb 18 05:00 sensord_CSPRNG1
+-rw-r--r--    1 root     root             8 May 16  2019 sensord_crashVer0
+-rw-r--r--    1 root     root             8 May 29  2019 sensord_crashVer1
+drwxr-xr-x    2 root     root           648 Mar  7  2019 ssh
+-rw-r--r--    1 root     root            40 Jun 12  2024 stable_secret_seed
+drwxr-xr-x    3 support  root           224 Mar 17  2018 support
+drwxr-xr-x    2 root     root          4680 Feb 18 05:23 syslogs
+-rw-r--r--    1 root     root           213 Sep 18  2024 wgb_running_config.3802_SW5_151_05
+-rw-r--r--    1 root     root           213 Sep 18  2024 wgb_running_config.3802_SW5_151_05.bak
+-rw-r--r--    1 root     root             1 Feb 18 05:00 wips_adminstate_capwap
+drwxr-xr-x    2 root     root           232 Sep 18  2024 wpagent
+---------------------------------------------------------------------------
+Filesystem                Size      Used Available Use% Mounted on
+flash                    57.5M      4.5M     50.0M   8% /storage
+
+
+
+<cmd string='show flash | i cnssdaemon.log'>
+	show flash | i cnssdaemon.log
+
+
+<cmd string='show boot'>
+	show boot
+
+--- Boot Variable Table ---
+BOOT path-list:      part2
+Console Baudrate:    9600
+Enable Break:        yes
+Manual Boot:         no
+Memory Debug:        no
+Crashkernel:         no
+SCRUB_LIMIT:         40 (default)
+Kdump Limit:         0
+Kdump Collected:     0
+Debug init:          0
+---- Critical Applications UP timestamp ---
+#This file contains EVENT, TIME(in seconds since boot)
+SYSTEMD-START-ubifs_reformat_mount: [38.50]
+SYSTEMD-START-mountfs: [39.00]
+MOUNTFS-START: [39.17]
+MOUNTFS-END: [40.75]
+SYSTEMD-START-system_time_start: [40.93]
+SYSTEMD-START-generate_platforms: [40.99]
+SYSTEMD-START-fipscheck: [41.05]
+SYSTEMD-START-cisco-seed: [41.11]
+SYSTEMD-START-btldr_check: [43.66]
+SYSTEMD-START-act2check: [43.88]
+SYSTEMD-START-pkginstall: [43.94]
+SYSTEMD-START-system_time_stop: [44.25]
+SYSTEMD-START-S10boot: [44.31]
+SYSTEMD-START-act2_init: [66.95]
+SYSTEMD-START-nolan: [67.01]
+SYSTEMD-START-S15nss: [67.07]
+SYSTEMD-START-nolan_usb: [67.49]
+SYSTEMD-START-pre_poe_neg: [67.68]
+SYSTEMD-START-S15platform: [70.46]
+SYSTEMD-START-S15kclick: [70.52]
+SYSTEMD-START-S18cisco: [74.39]
+SYSTEMD-START-sysctl: [74.45]
+SYSTEMD-START-S16mod_load: [74.70]
+SYSTEMD-START-me-ewlc: [74.75]
+SYSTEMD-START-rsyslog: [76.66]
+SYSTEMD-START-S16platform: [76.96]
+SYSTEMD-START-synclogd: [77.09]
+SYSTEMD-START-brain: [77.13]
+CAPWAP_BRAIN_START: [77.22]
+CAPWAP_BRAIN_CLICK_GRAPH_INIT_BEGIN: [77.37]
+SYSTEMD-START-ntp_proc: [77.86]
+SYSTEMD-START-klogd: [77.91]
+SYSTEMD-START-printkd: [78.64]
+CAPWAP_BRAIN_CLICK_GRAPH_INIT_END: [79.44]
+CAPWAP_BRAIN_LOOP_START: [79.46]
+CAPWAP_BRAIN_BEGIN_INIT_SETUP: [79.51]
+SYSTEMD-START-sshd: [81.26]
+CAPWAP_BRAIN_LOAD_WIRELESS_DRIVERS_BEGIN: [90.99]
+CAPWAP_BRAIN_LOAD_WIRELESS_DRIVERS_END: [91.01]
+CAPWAP_BRAIN_DONE_INIT_SETUP: [91.28]
+SYSTEMD-START-mrvlfwd: [91.65]
+GOT IP[192.168.0.213]: [92.15]
+SYSTEMD-START-wcpd: [92.41]
+SYSTEMD-START-capwapd: [103.84]
+SYSTEMD-START-system_monitor: [103.93]
+SYSTEMD-START-cisco-kexec: [103.96]
+SYSTEMD-START-image_updater: [104.04]
+SYSTEMD-START-led: [104.09]
+SYSTEMD-START-dnsmasq: [104.51]
+SYSTEMD-START-aptraced: [104.54]
+SYSTEMD-START-rtd: [104.68]
+SYSTEMD-START-hostapd: [104.84]
+SYSTEMD-START-cleanair: [104.81]
+SYSTEMD-START-grpc: [104.93]
+SYSTEMD-START-fastcgi: [114.09]
+SYSTEMD-START-dhcpv6: [128.59]
+CAPWAP-STATE[Init]: [129.42]
+CAPWAP-STATE[Discovery]: [129.54]
+CAPWAP-STATE[Discovery]: [129.60]
+CAPWAP-STATE[DTLS Setup]: [139.43]
+CAPWAP-STATE[Join]: [140.22]
+CAPWAP-STATE[Image Data]: [141.59]
+CAPWAP-STATE[Configure]: [141.73]
+CAPWAP-STATE[Run]: [144.44]
+SYSTEMD-START-rsyslog: [151.15]
+SYSTEMD-START-dhcpv6: [174.33]
+
+
+<cmd string='show filesystems'>
+	show filesystems
+Filesystem                Size      Used Available Use% Mounted on
+devtmpfs                500.6M         0    500.6M   0% /dev
+/dev/ubivol/storage      57.5M      4.5M     50.0M   8% /storage
+/sysroot                502.0M    124.7M    377.3M  25% /
+tmpfs                     1.0M     56.0K    968.0K   5% /dev/shm
+tmpfs                   502.0M    172.0K    501.9M   0% /run
+tmpfs                   502.0M         0    502.0M   0% /sys/fs/cgroup
+none                    100.0M      2.4M     97.6M   2% /tmp
+none                      1.0M     56.0K    968.0K   5% /dev/shm
+/dev/ubivol/firmware      5.6M    212.0K      5.4M   4% /firmware
+
+
+<cmd string='show image integrity'>
+	show image integrity
+/part1(Backup) 8.8.1.10
+    part.bin : Good
+    ramfs_data_cisco.cpio.lzma : Good
+    iox.tar.gz : Good
+/part2(primary) 17.12.6.28
+    part.bin : Good
+    ramfs_data_cisco.cpio.lzma : Good
+    iox.tar.gz : Good
+

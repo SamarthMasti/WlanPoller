@@ -13,7 +13,7 @@ from datetime import datetime
 from typing import List, Optional
 
 from time import time
-
+from PySide6.QtWidgets import QHeaderView
 from PySide6.QtCore import Qt, QSize, QThread, QTimer, Signal
 from PySide6.QtGui import QFont, QPixmap, QIcon
 from PySide6.QtWidgets import (
@@ -31,7 +31,12 @@ except Exception as e:
     print("BACKEND IMPORT ERROR:", e)
     PollerEngine = None
     IniStore = None
-    CONFD = "confd"
+    from pathlib import Path
+
+    BASE_DIR = Path(__file__).resolve().parent
+    CONFD = str(BASE_DIR / "confd")
+
+    os.makedirs(CONFD, exist_ok=True)
     ApRow = None
     analyze_logs = None
 
@@ -92,15 +97,22 @@ def apply_global_style(app: QApplication):
 
     QGroupBox {{
         background: #ffffff;
-        border: 1px solid #e6e8eb;
-        border-radius: 8px;
-        margin-top: 8px;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        
+        margin-top: 20px;
+        padding-top: 18px;  
+        
     }}
     QGroupBox::title {{
         subcontrol-origin: margin;
-        left: 12px;
-        top: -9px;
-        padding: 2px 6px;
+        subcontrol-position: top left;
+        left: 16px;
+        top: 6px;
+        padding: 0px 6px;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
     }}
 
     QPushButton {{
@@ -132,11 +144,27 @@ def apply_global_style(app: QApplication):
     }}
 
     QTableWidget {{
-        background: white;
-        border: 1px solid #e6e8eb;
-        border-radius: 6px;
+    background: white;
+    border: 1px solid #d1d5db;          /* outer border */
+    border-radius: 10px;
+    gridline-color: #e5e7eb;
+    selection-background-color: #dcfce7;
+    selection-color: #000000;
     }}
 
+    QTableWidget::item {{
+    border-right: 1px solid #f1f5f9;    /* subtle vertical lines */
+    border-bottom: 1px solid #f1f5f9;   /* subtle row lines */
+    padding: 10px;
+    }}
+
+    QHeaderView::section {{
+    background-color: #f3f4f6;
+    border-right: 1px solid #e5e7eb;
+    border-bottom: 1px solid #d1d5db;
+    padding: 8px;
+    font-weight: 600;
+     }}
     QProgressBar {{
         text-align: center;
         font-weight: 700;
@@ -173,13 +201,19 @@ def is_ipv4_or_ipv6(addr: str) -> bool:
 import configparser
 from dataclasses import dataclass
 
-CONFD = "confd"
+from pathlib import Path
+
+# Writable location for macOS bundled app
+BASE_DIR = Path.home() / "WlanPollerGUI_Data"
+BASE_DIR.mkdir(exist_ok=True)
+
+CONFD = str(BASE_DIR / "confd")
 
 
 class IniStore:
     def __init__(self, path: str):
         self.path = path
-        self.cfg = configparser.ConfigParser()
+        self.cfg = configparser.ConfigParser(interpolation=None)
         if os.path.exists(path):
             self.cfg.read(path)
 
@@ -258,8 +292,13 @@ class PollerWorker(QThread):
                     progress_cb=lambda pct: self.progress.emit(pct),
                     ap_update_cb=lambda i, ip, model, status, name: self.ap_update.emit(i, ip, model, status, name)
                 )
-
                 engine.operation = self.operation_type
+
+                # Only pass workflow to engine when WLC is involved
+                if self.operation_type == "WLC & AP":
+                    engine.workflow = self.workflow
+                else:
+                    engine.workflow = ""
 
             except Exception as e:
                 try:
@@ -321,14 +360,14 @@ class PollerWorker(QThread):
                     raise ValueError("AP Cmd List is empty.")
 
                 self.log.emit(f"[DEBUG] Parsed AP rows: {len(ap_rows)}")
-
+                self.log.emit(f"[DEBUG] AP list file path = {self.ap_list_file}")
                 engine.run_ap_poller(ap_rows, self.ap_device, self.ap_cmds)
-
                 summary.update({
                     "ap_total": len(ap_rows),
                     "ap_success": getattr(engine, "success", None),
                     "ap_failed": getattr(engine, "failed", None),
-                    "data_dir": getattr(engine, "data_dir", "")
+                    "data_dir": getattr(engine, "data_dir", ""),
+                    "workflow": ""  # 🔥 CRITICAL FIX
                 })
 
                 summary["end"] = datetime.now()
@@ -389,11 +428,17 @@ class PollerWorker(QThread):
             raise ValueError("Unknown operation.")
 
         except Exception as e:
-            try:
-                self.failed.emit(str(e))
-            except Exception:
-                pass
 
+            import traceback
+            traceback.print_exc()
+
+        try:
+
+            self.failed.emit(str(e))
+
+        except Exception:
+
+            pass
         finally:
             # cleanup engine if it exposes shutdown/close
             try:
@@ -418,22 +463,14 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.run_in_progress = False
         self.setWindowTitle("CISCO WLAN POLLER GUI")
-        screen = QApplication.primaryScreen().availableGeometry()
-        self.resize(int(screen.width() * 0.70), int(screen.height() * 0.75))
-
+        self.resize(1200, 820)
+        self.setMinimumSize(1200, 820)
         self._init_state()
         self._build_ui()
         # IMPORTANT: fix initial visibility after widgets exist
         QTimer.singleShot(0, self._post_init_layout_fix)
 
-    def _lock_window_size(self):
-        """
-        Freeze the window size after Qt calculates real minimum layout size.
-        Prevents runtime geometry growth when tables populate.
-        """
-        self.adjustSize()  # let Qt compute correct size
-        size = self.size()
-        self.setMinimumSize(size)
+
 
     def _init_state(self):
         self.operation_type = "WLC Only"
@@ -938,25 +975,36 @@ class MainWindow(QMainWindow):
         row.addItem(QSpacerItem(10, 10, QSizePolicy.Expanding, QSizePolicy.Minimum))
         row.addWidget(prev)
         lay.addLayout(row)
+        lay.addStretch()
 
         return w
 
     def _page_step6(self) -> QWidget:
-        w = QWidget();
-        lay = QVBoxLayout(w);
-        lay.setSpacing(10);
-        lay.setContentsMargins(8, 8, 8, 8);
-        lay.setAlignment(Qt.AlignTop)
-        card = QGroupBox("Step6 - Preview");
-        card.setFont(FONT_CARD_TITLE);
-        c_l = QVBoxLayout(card);
-        c_l.setContentsMargins(12, 18, 12, 12)
-        self.preview_text = QTextEdit();
-        self.preview_text.setReadOnly(True);
+        w = QWidget()
+
+        lay = QVBoxLayout(w)
+        lay.setSpacing(12)
+        lay.setContentsMargins(12, 12, 12, 12)
+
+        # -------- CARD --------
+        card = QGroupBox("Step6 - Preview")
+        card.setFont(FONT_CARD_TITLE)
+        card.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
+        c_l = QVBoxLayout(card)
+        c_l.setContentsMargins(18, 18, 18, 18)
+
+        self.preview_text = QTextEdit()
+        self.preview_text.setReadOnly(True)
+        self.preview_text.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
         c_l.addWidget(self.preview_text)
-        card.setLayout(c_l);
-        lay.addWidget(card)
+
+        lay.addWidget(card, 1)  # <-- IMPORTANT: stretch factor 1
+
+        # -------- BUTTON ROW --------
         row = QHBoxLayout()
+
         back = QPushButton("Back")
         back.setProperty("nav", True)
         back.clicked.connect(lambda: self._goto_step(4 if self.operation_type != "WLC Only" else 3))
@@ -965,10 +1013,12 @@ class MainWindow(QMainWindow):
         confirm.setProperty("nav", True)
         confirm.clicked.connect(self._start_run)
 
-        row.addWidget(back);
-        row.addItem(QSpacerItem(10, 10, QSizePolicy.Expanding, QSizePolicy.Minimum));
-        row.addWidget(confirm);
+        row.addWidget(back)
+        row.addStretch()
+        row.addWidget(confirm)
+
         lay.addLayout(row)
+        lay.addStretch()
         return w
 
     def _page_step7(self) -> QWidget:
@@ -982,14 +1032,16 @@ class MainWindow(QMainWindow):
         lay.addWidget(run_header)
         self.run_card = QGroupBox();
         rlay = QVBoxLayout(self.run_card);
-        rlay.setContentsMargins(12, 12, 12, 12);
+        rlay.setContentsMargins(8,8,8,8);
         rlay.setSpacing(8)
         self.run_log = QTextEdit()
         self.run_log.setReadOnly(True)
-        self.run_log.setFixedHeight(140)
-
+        self.run_log.setMinimumHeight(160)
+        self.run_log.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.run_log.setFont(QFont("Courier New", 13))
         rlay.addWidget(self.run_log)
-        lay.addWidget(self.run_card, 2)
+        lay.addWidget(self.run_card, 1)
+
         self.progress = QProgressBar();
         self.progress.setValue(0);
         self.progress.setTextVisible(True);
@@ -1021,17 +1073,28 @@ class MainWindow(QMainWindow):
         self.ap_table = QTableWidget(0, 4)
         # self.ap_table.setHorizontalHeaderLabels(["AP Name", "AP IP", "AP Model", "Status"])
         self.ap_table.setHorizontalHeaderLabels(["AP Name", "AP Model", "AP IP", "Status"])
-        self.ap_table.setColumnWidth(0, 200)  # AP Name
-        self.ap_table.setColumnWidth(1, 120)  # AP Model
-        self.ap_table.setColumnWidth(2, 120)  # AP IP
-        self.ap_table.setColumnWidth(3, 420)  # Status
+        header = self.ap_table.horizontalHeader()
+        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)  # AP Name
+        header.setSectionResizeMode(1, QHeaderView.ResizeToContents)  # Model
+        header.setSectionResizeMode(2, QHeaderView.ResizeToContents)  # IP
+        header.setSectionResizeMode(3, QHeaderView.Stretch)  # Status stretches
+        header.setSectionResizeMode(QHeaderView.Stretch)
 
+        self.ap_table.setColumnWidth(0, 220)  # AP Name
+        self.ap_table.setColumnWidth(1, 160)  # AP Model
+        self.ap_table.setColumnWidth(2, 160)  # AP IP
+        self.ap_table.setColumnWidth(3, 500)  # Status
+        self.ap_table.verticalHeader().setVisible(False)
+
+        self.ap_table.setWordWrap(False)
+        self.ap_table.setTextElideMode(Qt.ElideRight)
+        self.ap_table.verticalHeader().setDefaultSectionSize(36)
+        self.ap_table.verticalHeader().setSectionResizeMode(QHeaderView.Fixed)
+        self.ap_table.setAlternatingRowColors(True)
         self.ap_table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self.ap_table.verticalHeader().setDefaultSectionSize(32)
-        self.ap_table.setMinimumHeight(130)  # ≈ 3 rows visible
-
+        self.ap_table.setShowGrid(False)
         ap_layout.addWidget(self.ap_table)
-        lay.addWidget(self.ap_section, 4)
+        lay.addWidget(self.ap_section, 6)
 
         # ---------- Vulnerable Section Container ----------
         self.vuln_section = QWidget()
@@ -1042,24 +1105,30 @@ class MainWindow(QMainWindow):
         self.vuln_table = QTableWidget(0, 4)
         self.vuln_table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.vuln_table.verticalHeader().setDefaultSectionSize(32)
-        self.vuln_table.setMinimumHeight(110)
 
         self.vuln_table.setHorizontalHeaderLabels(["AP Name", "AP Model", "AP IP", "Recovery"])
-        self.vuln_table.setColumnWidth(0, 200)
-        self.vuln_table.setColumnWidth(1, 120)
-        self.vuln_table.setColumnWidth(2, 120)
-        self.vuln_table.setColumnWidth(3, 420)
-        self.vuln_table.setFixedHeight(120)
+        header_v = self.vuln_table.horizontalHeader()
+        header_v.setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        header_v.setSectionResizeMode(1, QHeaderView.ResizeToContents)
+        header_v.setSectionResizeMode(2, QHeaderView.ResizeToContents)
+        header_v.setSectionResizeMode(3, QHeaderView.Stretch)
+        header_v.setSectionResizeMode(QHeaderView.Interactive)
 
+        self.vuln_table.setColumnWidth(0, 220)
+        self.vuln_table.setColumnWidth(1, 160)
+        self.vuln_table.setColumnWidth(2, 160)
+        self.vuln_table.setColumnWidth(3, 500)
         vuln_layout.addWidget(self.vuln_table)
-        lay.addWidget(self.vuln_section, 2)
+        lay.addWidget(self.vuln_section, 5)
+        self.vuln_table.setShowGrid(False)
         # --------------------------------------------------
 
-        self.results_summary = QTextEdit();
+        self.results_summary = QTextEdit()
+        self.results_summary.setReadOnly(True)
         self.results_summary.setReadOnly(True);
-        self.results_summary.setMinimumHeight(70);
+
         lay.addWidget(QLabel("===== RESULT SUMMARY ====="));
-        lay.addWidget(self.results_summary, 0)
+        lay.addWidget(self.results_summary, 2)
         actions = QHBoxLayout()
         self.btn_save_log = QPushButton("Save Run Log")
         self.btn_save_log.setProperty("nav", True)
@@ -1083,6 +1152,7 @@ class MainWindow(QMainWindow):
         actions.addItem(QSpacerItem(10, 10, QSizePolicy.Expanding, QSizePolicy.Minimum));
         actions.addWidget(self.btn_close)
         lay.addLayout(actions)
+
         return w
 
     def _open_status_file(self):
@@ -2254,7 +2324,7 @@ class MainWindow(QMainWindow):
             self.ap_table.setItem(target_row, 1, QTableWidgetItem(model))
             self.ap_table.setItem(target_row, 2, QTableWidgetItem(ip))
             self.ap_table.setItem(target_row, 3, QTableWidgetItem(status))
-
+            self.ap_table.resizeRowToContents(target_row)
             if hasattr(self, "run_log"):
                 self.run_log.append(f"[AP_UPDATE] ip={ip} status={status}")
 
@@ -2552,7 +2622,24 @@ class MainWindow(QMainWindow):
 
         # ---------------- FILTERS ----------------
         filters_allowed = self.operation_type in ("WLC & AP", "AP Only")
+        # Disable model filter for AP Flash Checker in WLC & AP mode
+        if (
+                self.operation_type == "WLC & AP"
+                and getattr(self, "workflow", "") == "AP Flash Checker"
+        ):
+            if hasattr(self, "chk_model"):
+                self.chk_model.setChecked(False)
+                self.chk_model.setVisible(False)
 
+            if hasattr(self, "model_dd"):
+                self.model_dd.setVisible(False)
+        else:
+            # Restore visibility for other workflows
+            if hasattr(self, "chk_model"):
+                self.chk_model.setVisible(True)
+
+            if hasattr(self, "model_dd"):
+                self.model_dd.setVisible(True)
         if hasattr(self, "chk_site") and hasattr(self, "chk_model"):
             if not filters_allowed:
                 self.chk_site.setChecked(False)
@@ -2570,13 +2657,21 @@ class MainWindow(QMainWindow):
         self.stack.setCurrentIndex(0)
 
         # allow Qt to finish geometry
-        QTimer.singleShot(50, self._lock_window_size)
+
 
     def _ui_progress_update(self, pct):
         if hasattr(self, "progress"):
             self.progress.setValue(pct)
 
+    def changeEvent(self, event):
+        from PySide6.QtCore import QEvent
 
+        if event.type() == QEvent.WindowStateChange:
+            if not self.isMinimized():
+                if hasattr(self, "ap_table"):
+                    self.ap_table.resizeRowsToContents()
+
+        super().changeEvent(event)
 def resource_path(relpath: str) -> str:
     """
     Return a filesystem path to `relpath` that works when running normally
@@ -2600,7 +2695,6 @@ def main():
     app.aboutToQuit.connect(win._stop_worker)
     win.show()
     sys.exit(app.exec())
-
 
 if __name__ == "__main__":
     main()

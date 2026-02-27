@@ -1,7 +1,0 @@
-show clock
-show version
-show flash
-show flash | i cnssdaemon.log
-show boot
-show filesystems
-show image integrity

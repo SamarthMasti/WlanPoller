@@ -16,10 +16,34 @@ import threading
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from netmiko import ConnectHandler
+from pathlib import Path
 
-CONFD = "confd"
 
+from pathlib import Path
 
+BASE_DIR = Path(__file__).resolve().parent
+CONFD = str(BASE_DIR / "confd")
+QCA_PREFIXES = (
+    # Wi-Fi 6 (802.11ax) QCA-based
+    "9117",
+    "9130",
+    "9136",
+
+    # Wi-Fi 6E (6GHz) QCA-based
+    "9162",
+    "9163",
+    "9164",
+    "9166",
+
+    # Wi-Fi 7 (802.11be) QCA-based
+    "9171",
+    "9172",
+    "9174",
+    "9176",
+    "9178",
+    "9179",
+)
+os.makedirs(CONFD, exist_ok=True)
 def ensure_dir(path: str) -> str:
     os.makedirs(path, exist_ok=True)
     return path
@@ -72,7 +96,7 @@ class IniStore:
     """
     def __init__(self, path: str):
         self.path = path
-        self.cfg = configparser.ConfigParser()
+        self.cfg = configparser.ConfigParser(interpolation=None)
 
         if os.path.exists(path):
             try:
@@ -247,6 +271,7 @@ class PollerEngine:
         # track sessions/sockets if we want to forcibly close them on shutdown
         self._open_sessions = []
         self.operation = "WLC & AP"
+        self.workflow = ""
     def _log(self, msg: str):
         if self.log_cb:
             self.log_cb(msg)
@@ -290,9 +315,14 @@ class PollerEngine:
 
 
     def _wlc_connect(self):
-        wlc_ip = self.ini.get("WLC", "WlcIpaddr")
+        wlc_ip = (
+                self.ini.get("WLC", "wlc_ip") or
+                self.ini.get("WLC", "wlcipaddr") or
+                self.ini.get("WLC", "WlcIpaddr")
+        )
+
         if not wlc_ip:
-            raise ValueError("Missing WLC IP in confd/config.ini ([WLC] WlcIpaddr)")
+            raise ValueError("Missing WLC IP in config.ini ([WLC] wlc_ip)")
         dev = {
             "device_type": "cisco_ios",
             "host": wlc_ip,
@@ -341,22 +371,34 @@ class PollerEngine:
 
     def fetch_full_ap_list(self) -> List[ApRow]:
         self._log("[WLC] fetch_full_ap_list() starting...")
+        self._log(f"[MODE CHECK] operation={self.operation} workflow={self.workflow}")
         conn = self._wlc_connect()
         out = conn.send_command("show ap summary", read_timeout=180)
         conn.disconnect()
+
         rows = WlcParse.parse_ap_summary(out)
 
+        # QCA Filter for AP Flash Checker workflow
+        if self.operation == "WLC & AP" and self.workflow == "AP Flash Checker":
+            filtered = []
+            for r in rows:
+                model_upper = r.model.upper()
+                if any(prefix in model_upper for prefix in QCA_PREFIXES):
+                    filtered.append(r)
+            rows = filtered
+
         all_path = os.path.join(CONFD, "ap_ip_list_all.txt")
+
         with open(all_path, "w", encoding="utf-8") as f:
             for r in rows:
                 f.write(f"{r.ip} {r.model} {r.name}\n")
+
         with open(os.path.join(self.data_dir, "ap_ip_list_all.txt"), "w", encoding="utf-8") as f:
             for r in rows:
                 f.write(f"{r.ip} {r.model} {r.name}\n")
 
         self._log(f"[WLC] Full AP list saved: {all_path} ({len(rows)} APs)")
         return rows
-
     def filter_by_site_tag(self, full_rows: List[ApRow], site_tag: str):
         self._log(f"[WLC] filter_by_site_tag('{site_tag}') starting...")
         conn = self._wlc_connect()
@@ -410,19 +452,25 @@ class PollerEngine:
                     f.write(f"{r.ip} {r.model}\n")
         return p
 
+    def _ap_connect_params(self, ip: str, model: str) -> Dict[str, str]:
 
-    def _ap_connect_params(self, ip: str) -> Dict[str, str]:
+        device_type = "cisco_ios"  # default
+
+        model_upper = (model or "").upper()
+
+        # QCA models use IOS-XE
+        if any(prefix in model_upper for prefix in QCA_PREFIXES):
+            device_type = "cisco_xe"
+
         return {
-            "device_type": "cisco_ios",
+            "device_type": device_type,
             "host": ip,
             "username": self.ini.get("AP", "ap_user"),
             "password": self.ini.get("AP", "ap_pasw"),
             "secret": self.ini.get("AP", "ap_enable"),
-            # shorter timeout so stuck TCP connects do not block too long
             "timeout": 20,
             "fast_cli": False,
         }
-
     @staticmethod
     def _ap_send_command(conn, cmd: str, read_timeout: int) -> str:
         try:
@@ -435,7 +483,7 @@ class PollerEngine:
     def _poll_one_ap(self, idx: int, ap: ApRow, device: str, cmds: List[str]):
         try:
             self._log(f"[AP] ({idx+1}) Connecting {ap.ip} ({ap.name}) ...")
-            conn = ConnectHandler(**self._ap_connect_params(ap.ip))
+            conn = ConnectHandler(**self._ap_connect_params(ap.ip,ap.model))
             conn.enable()
             # Disable paging; some APs use non-standard "more" prompts.
             try:
@@ -561,5 +609,7 @@ class PollerEngine:
                 pass
 
         elapsed = int(time.time() - start)
+
+
         self._log(f"[AP] Done. Success={self.success} Fail={self.failed} Time={elapsed}s")
         return results

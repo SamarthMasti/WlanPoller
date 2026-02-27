@@ -1,9 +1,0 @@
-show inventory
-show rrm neighbor-list
-show capwap client rcb
-show capwap client config
-show dot11 generic wl apr1v0 counters
-show dot11 generic wl apr1v0 chanim_stats
-show dot11 generic wl apr1v0 dump phyaci
-show dot11 generic wl apr1v0 dump phycal
-show controller dot11 1

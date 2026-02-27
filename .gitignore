@@ -1,7 +1,22 @@
+# Build output
+dist/
+dist_normal/
+build/
+build_normal/
+
+# Runtime folders
+confd/
+data/
+
+# macOS
+.DS_Store
+
+# Python
 __pycache__/
 *.pyc
-data/
-confd/config.ini
-venv/
-build/
-dist/
+
+# Virtual env
+venv310/
+
+# IDE
+.idea/

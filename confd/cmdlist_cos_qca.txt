@@ -1,3 +1,0 @@
-show flash
-show boot
-show ver

@@ -1,3 +1,0 @@
-show ap tag summary
-show clock
-show version

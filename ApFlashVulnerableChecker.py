@@ -32,7 +32,8 @@ def ap_model_from_log(path: str) -> Tuple[Optional[str], Optional[bool]]:
         if len(parts) < 2:
             return None, None
         ap_model = parts[1].strip()
-        return ap_model, ap_model in ("(ap1g6a)", "(ap1g6b)")
+        FLASH_ALLOWED_MODELS = {"(ap1g6)", "(ap1g6a)", "(ap1g6b)"}
+        return ap_model, ap_model in FLASH_ALLOWED_MODELS
     return None, None
 
 

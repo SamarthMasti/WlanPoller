@@ -1,0 +1,29 @@
+[33mcommit 0de23c1c5bd42693dcb83b37277a3c44ecebc0a7[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: Samarth <samarth@example.com>
+Date:   Fri Mar 6 18:19:19 2026 +0530
+
+    Updated gitignore for build artifacts and binaries
+
+[33mcommit 658ca56e25e4e79ecddcdabd2c0e33ea3598f2e6[m
+Author: Samarth <samarth@example.com>
+Date:   Fri Mar 6 18:08:33 2026 +0530
+
+    Updated PollerEngine, AP Flash checker, and GUI improvements for cross Added Cross-Platform Application Base Directory Logic
+
+[33mcommit be3736a575ca9e3a8454aca1a014170ab20d1ccd[m
+Author: Cisco <adidfncn@adidfncns-MacBook-Pro.local>
+Date:   Mon Mar 2 19:29:22 2026 +0530
+
+    Ver.501 Production Release - Run Isolation, Watchdog Stability, Flash Checker Improvements
+
+[33mcommit c9af0fe300336d429c7e0eba11a122066f486f8f[m
+Author: Cisco <adidfncn@adidfncns-MacBook-Pro.local>
+Date:   Fri Feb 27 17:41:44 2026 +0530
+
+    Final
+
+[33mcommit 43ad32bee42b4bef64703f0d1ecc4424c536976d[m
+Author: Samarth <samarth@example.com>
+Date:   Thu Feb 19 16:56:38 2026 +0530
+
+    Initial commit - Cisco WLAN Poller GUI

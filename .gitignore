@@ -1,22 +1,74 @@
-# Build output
-dist/
-dist_normal/
-build/
-build_normal/
-
-# Runtime folders
-confd/
-data/
-
-# macOS
-.DS_Store
-
+# ------------------------------------------------
 # Python
+# ------------------------------------------------
 __pycache__/
-*.pyc
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.dll
+*.dylib
 
-# Virtual env
-venv310/
+# Cython generated files
+*.c
+*.cpp
+*.html
 
-# IDE
+# ------------------------------------------------
+# Virtual Environments
+# ------------------------------------------------
+venv/
+venv*/
+env/
+.env/
+
+# ------------------------------------------------
+# Build / Distribution
+# ------------------------------------------------
+build/
+dist/
+*.egg-info/
+*.spec
+
+# PyInstaller output
+windows.dist/
+windows.dist.zip
+
+# ------------------------------------------------
+# IDE / Editor
+# ------------------------------------------------
 .idea/
+.vscode/
+*.iml
+
+# ------------------------------------------------
+# Logs / Temporary files
+# ------------------------------------------------
+*.log
+*.tmp
+*.bak
+*.swp
+
+# ------------------------------------------------
+# OS files
+# ------------------------------------------------
+.DS_Store
+Thumbs.db
+
+# ------------------------------------------------
+# Reports / Generated data
+# ------------------------------------------------
+vulnerable_AP_report.txt
+
+# ------------------------------------------------
+# Cache / Misc
+# ------------------------------------------------
+.cache/
+pytest_cache/
+.mypy_cache/
+
+# ------------------------------------------------
+# Ignore compiled extensions produced by build
+# ------------------------------------------------
+*.cp*-win_amd64.pyd
+*.cp*-linux*.so

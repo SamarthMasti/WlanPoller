@@ -11,7 +11,7 @@ import socket
 import re
 from datetime import datetime
 from typing import List, Optional
-
+from pathlib import Path
 from time import time
 from PySide6.QtWidgets import QHeaderView
 from PySide6.QtCore import Qt, QSize, QThread, QTimer, Signal
@@ -23,23 +23,52 @@ from PySide6.QtWidgets import (
     QFileDialog, QSizePolicy, QSpacerItem, QFrame, QProgressBar, QFormLayout
 )
 
+APP_NAME = "CISCO WLAN POLLER GUI"
+APP_VERSION = "v5.0.2"
 try:
     from ApFlashVulnerableChecker import analyze_logs
-    from PollerEngine import PollerEngine
-
-except Exception as e:
-    print("BACKEND IMPORT ERROR:", e)
-    PollerEngine = None
-    IniStore = None
-    from pathlib import Path
-
-    BASE_DIR = Path(__file__).resolve().parent
-    CONFD = str(BASE_DIR / "confd")
-
-    os.makedirs(CONFD, exist_ok=True)
-    ApRow = None
+except ImportError as e:
+    print("ApFlashVulnerableChecker import failed:", e)
     analyze_logs = None
 
+try:
+    from PollerEngine import PollerEngine
+except ImportError as e:
+    raise ImportError(f"CRITICAL: Failed to import PollerEngine module: {e}")
+
+def get_app_base_dir() -> Path:
+    """
+    Returns directory where:
+    - WlanPollerGUI.app lives (macOS)
+    - WlanPollerGUI.exe lives (Windows)
+    - script folder when running source
+    """
+
+    if getattr(sys, "frozen", False):
+
+        exe = Path(sys.executable).resolve()
+
+        # macOS bundled app
+        if exe.parent.name == "MacOS" and exe.parent.parent.name == "Contents":
+            return exe.parents[3]   # <-- outside .app
+
+        return exe.parent
+
+    return Path(__file__).resolve().parent
+
+BASE_DIR = get_app_base_dir()
+
+DATA_DIR = BASE_DIR / "data"
+CONFD_DIR = BASE_DIR / "confd"
+
+DATA_DIR.mkdir(parents=True, exist_ok=True)
+CONFD_DIR.mkdir(parents=True, exist_ok=True)
+
+
+
+CONFIG_FILE = str(CONFD_DIR / "config.ini")
+
+CONFD = str(CONFD_DIR)
 # Optional Excel export
 try:
     from openpyxl import Workbook
@@ -99,10 +128,10 @@ def apply_global_style(app: QApplication):
         background: #ffffff;
         border: 1px solid #e5e7eb;
         border-radius: 10px;
-        
+
         margin-top: 20px;
         padding-top: 18px;  
-        
+
     }}
     QGroupBox::title {{
         subcontrol-origin: margin;
@@ -198,16 +227,18 @@ def is_ipv4_or_ipv6(addr: str) -> bool:
         return True
     except Exception:
         return False
+
+
 import configparser
 from dataclasses import dataclass
 
-from pathlib import Path
+
 
 # Writable location for macOS bundled app
-BASE_DIR = Path.home() / "WlanPollerGUI_Data"
-BASE_DIR.mkdir(exist_ok=True)
+from pathlib import Path
+import sys
+import os
 
-CONFD = str(BASE_DIR / "confd")
 
 
 class IniStore:
@@ -216,6 +247,10 @@ class IniStore:
         self.cfg = configparser.ConfigParser(interpolation=None)
         if os.path.exists(path):
             self.cfg.read(path)
+        if self.cfg.has_option("WLC", "wlcipaddr"):
+            val = self.cfg.get("WLC", "wlcipaddr")
+            self.cfg.set("WLC", "wlc_ip", val)
+            self.cfg.remove_option("WLC", "wlcipaddr")
 
     def get(self, section: str, key: str, default: str = "") -> str:
         return self.cfg.get(section, key, fallback=default)
@@ -227,8 +262,8 @@ class IniStore:
             self.cfg.set(section, k, v)
 
     def save(self):
-        os.makedirs(os.path.dirname(self.path), exist_ok=True)
-        with open(self.path, "w") as f:
+        Path(self.path).parent.mkdir(parents=True, exist_ok=True)
+        with open(self.path, "w", encoding="utf-8") as f:
             self.cfg.write(f)
 
 
@@ -285,8 +320,7 @@ class PollerWorker(QThread):
         try:
             # create engine inside try/except so creation failures are visible
             try:
-                if PollerEngine is None:
-                    raise RuntimeError("PollerEngine.py not found. Place backend in same folder.")
+
                 engine = PollerEngine(
                     log_cb=lambda msg: self.log.emit(msg),
                     progress_cb=lambda pct: self.progress.emit(pct),
@@ -374,8 +408,6 @@ class PollerWorker(QThread):
                 self.finished_ok.emit(summary)
                 return
 
-
-
             # --- WLC & AP ---
             if self.operation_type == "WLC & AP":
                 if self.wlc_cmds:
@@ -419,7 +451,7 @@ class PollerWorker(QThread):
                     })
 
                 if self.workflow == "AP Flash Checker" and analyze_logs:
-                    vuln_rows, _ = analyze_logs(summary["data_dir"])
+                    vuln_rows, _ = analyze_logs(str(summary["data_dir"]))
                     summary["vulnerable_rows"] = vuln_rows
                 summary["end"] = datetime.now()
                 self.finished_ok.emit(summary)
@@ -427,18 +459,31 @@ class PollerWorker(QThread):
 
             raise ValueError("Unknown operation.")
 
+
         except Exception as e:
 
             import traceback
+
             traceback.print_exc()
 
-        try:
+            try:
 
-            self.failed.emit(str(e))
+                self.log.emit(f"[ERROR] {str(e)}")
 
-        except Exception:
+            except Exception:
 
-            pass
+                pass
+
+            try:
+
+                self.failed.emit(str(e))
+
+            except Exception:
+
+                pass
+
+
+
         finally:
             # cleanup engine if it exposes shutdown/close
             try:
@@ -462,15 +507,13 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.run_in_progress = False
-        self.setWindowTitle("CISCO WLAN POLLER GUI")
+        self.setWindowTitle(f"{APP_NAME} {APP_VERSION}")
         self.resize(1200, 820)
         self.setMinimumSize(1200, 820)
         self._init_state()
         self._build_ui()
         # IMPORTANT: fix initial visibility after widgets exist
         QTimer.singleShot(0, self._post_init_layout_fix)
-
-
 
     def _init_state(self):
         self.operation_type = "WLC Only"
@@ -487,7 +530,7 @@ class MainWindow(QMainWindow):
         self.wlc_cmds: List[str] = []
         self.ap_cmds: List[str] = []
         if IniStore:
-            self.ini = IniStore(os.path.join(CONFD, "config.ini"))
+            self.ini = IniStore(CONFIG_FILE)
         else:
             self.ini = None
 
@@ -506,7 +549,7 @@ class MainWindow(QMainWindow):
         if left_pix:
             left_logo.setPixmap(left_pix)
         hero_layout.addWidget(left_logo, 0, Qt.AlignmentFlag.AlignVCenter)
-        title = QLabel("CISCO WLAN POLLER GUI")
+        title = QLabel("WLAN POLLER GUI")
         title.setObjectName("heroTitle")
         title.setFont(FONT_TITLE)
         title.setStyleSheet("color: white;")
@@ -606,6 +649,44 @@ class MainWindow(QMainWindow):
             return
 
         event.accept()
+
+    def _inject_run_preview_into_log(self):
+        """
+        Inject Step6 preview block at top of Step7 Run Log.
+        Production safe: no passwords exposed.
+        """
+
+        if not hasattr(self, "run_log"):
+            return
+
+        preview_text = ""
+
+        # Get Step6 preview text safely
+        if hasattr(self, "preview_text"):
+            try:
+                preview_text = self.preview_text.toPlainText().strip()
+            except Exception:
+                preview_text = ""
+
+        if not preview_text:
+            preview_text = "Preview not available."
+
+        header_block = []
+        header_block.append("=" * 56)
+        header_block.append("RUN CONFIGURATION PREVIEW")
+        header_block.append("=" * 56)
+        header_block.append("")
+        header_block.append(preview_text)
+        header_block.append("")
+        header_block.append("=" * 56)
+        header_block.append("STARTING EXECUTION...")
+        header_block.append("=" * 56)
+        header_block.append("")
+
+        try:
+            self.run_log.append("\n".join(header_block))
+        except Exception:
+            pass
 
     # ---------------- Pages ----------------
     def _page_step1(self) -> QWidget:
@@ -709,7 +790,7 @@ class MainWindow(QMainWindow):
         wlc_form = QFormLayout(self.wlc_block)
 
         self.wlc_ip_label = QLabel("WLC IP Address")
-        self.wlc_ip = QLineEdit(self.ini.get("WLC", "WlcIpaddr") if self.ini else "")
+        self.wlc_ip = QLineEdit(self.ini.get("WLC", "wlc_ip") if self.ini else "")
         self.wlc_ip.setFixedHeight(30)
 
         self.wlc_user_label = QLabel("WLC Username")
@@ -794,7 +875,7 @@ class MainWindow(QMainWindow):
 
         self.workflow_dd = QComboBox()
         # add items
-        self.workflow_dd.addItems(["AP Flash Checker", "Custom CLI Commands", "AP Image Download"])
+        self.workflow_dd.addItems(["AP Flash Checker", "Custom CLI Commands"])
         self.workflow_dd.currentTextChanged.connect(self._on_workflow_change)
         self.workflow_dd.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.workflow_dd.setFixedHeight(30)
@@ -857,18 +938,29 @@ class MainWindow(QMainWindow):
         ap_mode_row.addWidget(self.ap_mode_dd)
         ap_mode_row.addStretch()
         ap_section_layout.addLayout(ap_mode_row)
-
+        # ---------------- AP COMMAND BOX ----------------
         self.ap_cmd_box = QTextEdit()
-        self.ap_cmd_box.setPlaceholderText(
-            "Enter AP commands (one per line). (Enter the archive download command to download AP image)")
+        self.ap_cmd_box.setPlaceholderText("Enter AP commands (one per line)")
         ap_section_layout.addWidget(self.ap_cmd_box)
+        # ---------------- FTP GROUP ----------------
+        self.ftp_group = QGroupBox("AP Image Download - TFTP ONLY")
+        self.ftp_group.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
 
-        # FTP group
-        self.ftp_group = QGroupBox("FTP (Only for AP Image Download)")
-        ftp_grid = QGridLayout(self.ftp_group)
-        ...
+        ftp_layout = QFormLayout()
+        self.ftp_group.setLayout(ftp_layout)
+
+        self.ftp_addr = QLineEdit()
+        self.ftp_path = QLineEdit()
+        self.ftp_user = QLineEdit()
+        self.ftp_pasw = QLineEdit()
+        self.ftp_pasw.setEchoMode(QLineEdit.Password)
+        self.scp_port = QLineEdit("22")
+
+        ftp_layout.addRow("FTP(SFTP)Username:", self.ftp_user)
+        ftp_layout.addRow("FTP(SFTP) Password:", self.ftp_pasw)
+
+        # Add ONCE only
         ap_section_layout.addWidget(self.ftp_group)
-
         c_l.addWidget(self.ap_cmd_section)
         # ------------------------------------------
 
@@ -913,9 +1005,9 @@ class MainWindow(QMainWindow):
         c_l.setSpacing(15)
 
         r = 0
-        note = QLabel("(Only one filter can be active at a time)")
-        note.setStyleSheet(f"color:{TEXT_MUTED};")
-        c_l.addWidget(note, r, 0, 1, 2)
+        # note = QLabel("(Only one filter can be active at a time)")
+        # note.setStyleSheet(f"color:{TEXT_MUTED};")
+        # c_l.addWidget(note, r, 0, 1, 2)
         r += 1
 
         # --- APs By Model (show first) ---
@@ -944,7 +1036,7 @@ class MainWindow(QMainWindow):
         r += 1
 
         # --- APs By SiteTag (show second) ---
-        self.chk_site = QCheckBox("APs By SiteTag")
+        self.chk_site = QCheckBox("APs By SiteTag(optional)")
         self.site_tag_txt = QLineEdit()
         self.site_tag_txt.setPlaceholderText("Enter SiteTag Name")
         self.site_tag_txt.setFixedHeight(28)
@@ -1024,15 +1116,15 @@ class MainWindow(QMainWindow):
     def _page_step7(self) -> QWidget:
         w = QWidget()
         lay = QVBoxLayout(w)
-        lay.setContentsMargins(12, 6, 12, 10)
-        lay.setSpacing(8)
+        lay.setContentsMargins(12, 0, 12, 10)
+        lay.setSpacing(2)
 
         run_header = QLabel("Run Log (CLI Output)");
         run_header.setStyleSheet("font-size:18px; font-weight:700; padding:6px 0;");
         lay.addWidget(run_header)
         self.run_card = QGroupBox();
         rlay = QVBoxLayout(self.run_card);
-        rlay.setContentsMargins(8,8,8,8);
+        rlay.setContentsMargins(8, 2, 8, 8);
         rlay.setSpacing(8)
         self.run_log = QTextEdit()
         self.run_log.setReadOnly(True)
@@ -1208,6 +1300,15 @@ class MainWindow(QMainWindow):
         lay.addWidget(self.parser_pattern);
         lay.addWidget(btn);
         lay.addWidget(self.parser_out)
+        row = QHBoxLayout()
+        row.addStretch()
+
+        self.btn_parser_close = QPushButton("Close")
+        self.btn_parser_close.setProperty("nav", True)
+        self.btn_parser_close.clicked.connect(self.close)
+
+        row.addWidget(self.btn_parser_close)
+        lay.addLayout(row)
         return w
 
     # ---------------- Actions / Helpers ----------------
@@ -1231,8 +1332,8 @@ class MainWindow(QMainWindow):
                     self.run_log.append(f"[DEBUG] preview build failed: {e}")
 
     def _on_operation_change(self, value: str):
-        self.operation_type = value;
-        self._refresh_step1();
+        self.operation_type = value
+        self._refresh_step1()
         self._refresh_visibility()
         self._update_step7_visibility()
 
@@ -1284,12 +1385,19 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "Warning", "INI backend not available.");
             return
         if self.operation_type in ("WLC Only", "WLC & AP"):
-            self.ini.bulk_set("WLC", {"WlcIpaddr": self.wlc_ip.text().strip(), "wlc_user": self.wlc_user.text().strip(),
-                                      "wlc_pasw": self.wlc_pass.text()})
+            self.ini.bulk_set("WLC", {
+                "wlc_ip": self.wlc_ip.text().strip(),
+                "wlc_user": self.wlc_user.text().strip(),
+                "wlc_pasw": self.wlc_pass.text()
+            })
         if self.operation_type in ("WLC & AP", "AP Only"):
             self.ini.bulk_set("AP", {"ap_user": self.ap_user.text().strip(), "ap_pasw": self.ap_pass.text(),
                                      "ap_enable": self.ap_enable.text()})
         self.ini.save();
+        print("DbgWpgui: Save Func Written to file : ",CONFD)
+        print("DbgWpgui:Executable:", DATA_DIR)
+        print("DbgWpgui:Base dir:", BASE_DIR)
+
         QMessageBox.information(self, "Saved", "Credentials saved to confd/config.ini")
 
     def _save_creds_silent(self):
@@ -1298,8 +1406,11 @@ class MainWindow(QMainWindow):
         if self.operation_type in ("WLC Only", "WLC & AP"):
             try:
                 self.ini.bulk_set("WLC",
-                                  {"WlcIpaddr": self.wlc_ip.text().strip(), "wlc_user": self.wlc_user.text().strip(),
-                                   "wlc_pasw": self.wlc_pass.text()})
+                                  {
+                                      "wlc_ip": self.wlc_ip.text().strip(),
+                                      "wlc_user": self.wlc_user.text().strip(),
+                                      "wlc_pasw": self.wlc_pass.text()
+                                  })
             except Exception:
                 pass
         if self.operation_type in ("WLC & AP", "AP Only"):
@@ -1340,9 +1451,13 @@ class MainWindow(QMainWindow):
                 pass
 
             last = getattr(self, "last_progress_time", None)
-            if last is None or (time() - last) > 30:
+            timeout_sec = 120
+            if last is None or (time() - last) > timeout_sec:
                 if hasattr(self, "run_log"):
-                    self.run_log.append("[WATCHDOG] No progress or log for 30s — worker may be stuck.")
+                    self.run_log.append(
+                        f"[WATCHDOG] No progress or log for {timeout_sec}s. "
+                        f"Worker may be waiting on a long-running device command."
+                    )
                 # optionally request interruption once
                 try:
                     if hasattr(self.worker, "requestInterruption"):
@@ -1398,6 +1513,9 @@ class MainWindow(QMainWindow):
         else:
             ap_cmds = getattr(self, "ap_cmds", [])
 
+            print("DEBUG FINAL AP CMDS:")
+            for c in ap_cmds:
+                print(c)
         # Build the worker
         try:
             self.worker = PollerWorker(
@@ -1531,6 +1649,7 @@ class MainWindow(QMainWindow):
             self.last_progress_time = time()
             self.watchdog_timer.start()
             self._goto_step(6)
+            self._inject_run_preview_into_log()
         except Exception:
             try:
                 self.stack.setCurrentIndex(6)
@@ -1544,8 +1663,6 @@ class MainWindow(QMainWindow):
             # Pre-read file to know row count
             with open(self.ap_list_file, "r", encoding="utf-8", errors="ignore") as f:
                 lines = [l for l in f if l.strip()]
-
-
 
         try:
             self.worker.start()
@@ -1626,13 +1743,12 @@ class MainWindow(QMainWindow):
             if hasattr(self, "ap_cmd_box"):
                 self.ap_cmds = [l.strip() for l in self.ap_cmd_box.toPlainText().splitlines() if l.strip()]
         except Exception:
-            self.ap_cmds = getattr(self, "ap_cmds", [])
 
-        # Now decide next step based on operation type
-        if self.operation_type == "WLC Only":
-            if not self.wlc_cmds:
-                QMessageBox.critical(self, "Missing", "Enter WLC Cmd List.")
-                return
+            # Now decide next step based on operation type
+            if self.operation_type == "WLC Only":
+                if not self.wlc_cmds:
+                    QMessageBox.critical(self, "Missing", "Enter WLC Cmd List.")
+                    return
             # Populate the textual preview and go to Preview (Step6 -> index 5)
             self._fill_preview()
             self._goto_step(5)
@@ -1689,26 +1805,15 @@ class MainWindow(QMainWindow):
         else:
             ap_mode = getattr(self, "ap_mode", "AP Custom Cmd List")
 
-        # If AP Image Download is selected, validate FTP fields
-        if ap_mode == "AP Image Download":
-            ftp_missing = False
-            ftp_addr = getattr(self, "ftp_addr", None)
-            ftp_path = getattr(self, "ftp_path", None)
-            ftp_user = getattr(self, "ftp_user", None)
-            ftp_pasw = getattr(self, "ftp_pasw", None)
-            scp_port = getattr(self, "scp_port", None)
+            # If AP Image Download is selected, validate FTP fields
 
-            if not (ftp_addr and ftp_addr.text().strip()):
-                ftp_missing = True
-            if not (ftp_path and ftp_path.text().strip()):
-                ftp_missing = True
             if not (ftp_user and ftp_user.text().strip()):
                 ftp_missing = True
             if not (ftp_pasw and ftp_pasw.text()):
                 ftp_missing = True
 
             if ftp_missing:
-                QMessageBox.critical(self, "FTP Missing", "FTP fields are mandatory for AP Image Download.")
+                QMessageBox.critical(self, "FTP Missing", "FTP(SFTP) fields are mandatory for AP Image Download.")
                 return
             # If present, persist FTP into INI (defensive)
             if self.ini:
@@ -1716,8 +1821,8 @@ class MainWindow(QMainWindow):
                     self.ini.bulk_set("FTP", {
                         "ftp_addr": ftp_addr.text().strip(),
                         "ftp_path": ftp_path.text().strip(),
-                        "ftp_user": ftp_user.text().strip(),
-                        "ftp_pasw": ftp_pasw.text(),
+                        "ftp_user(sftp)": ftp_user.text().strip(),
+                        "ftp_pasw(sftp)": ftp_pasw.text(),
                         "scp_port": scp_port.text().strip() if scp_port and scp_port.text().strip() else "22"
                     })
                     self.ini.save()
@@ -1766,7 +1871,7 @@ class MainWindow(QMainWindow):
         self.wlc_cmds = wlc_cmds
         self.ap_cmds = ap_cmds
 
-        QMessageBox.information(self, "Saved", "Cmd lists (and FTP details if provided) saved under confd/")
+        QMessageBox.information(self, "Saved", "Cmd lists (and FTP(SFTP) details if provided) saved under confd/")
 
     def _save_run_log(self):
         """
@@ -1774,7 +1879,7 @@ class MainWindow(QMainWindow):
         Defensive: works even if run_log widget is not present.
         """
         try:
-            folder = "data"
+            folder = DATA_DIR
             os.makedirs(folder, exist_ok=True)
             ts = datetime.now().strftime("%Y%m%d_%H%M%S")
             fn = os.path.join(folder, f"WlanPoller_RunLog_{ts}.txt")
@@ -1802,27 +1907,34 @@ class MainWindow(QMainWindow):
     def _on_ap_mode_changed(self, text: str):
         """
         Called when the AP Mode dropdown changes (Step4).
-        Keeps canonical state in self.ap_mode and toggles the FTP UI.
+        In TFTP-only mode, we simply persist the selection and
+        adjust placeholder text accordingly.
         """
-        # Persist the AP mode selection so other parts of the UI (and skipped-step flows)
-        # can reference it even when Step4 is not present.
+
+        # Persist AP mode selection
         self.ap_mode = text
 
-        # If the FTP group exists (created in Step4), toggle its visibility.
-        # If the FTP group is moved elsewhere later, this defensive check keeps code safe.
-        if hasattr(self, "ftp_group"):
+        # If AP Image Download is selected, show TFTP-only guidance
+        if text == "AP Image Download" and hasattr(self, "ap_cmd_box"):
             try:
-                self.ftp_group.setVisible(text == "AP Image Download")
-            except Exception:
-                # swallow any layout errors to keep UI stable
-                pass
-
-        # Update global visibility decisions that depend on ap_mode (FTP, AP cmd box, etc)
-        if hasattr(self, "_refresh_visibility"):
-            try:
-                self._refresh_visibility()
+                self.ap_cmd_box.setPlaceholderText(
+                    "TFTP ONLY MODE\n\n"
+                    "Enter archive download-sw command using TFTP.\n\n"
+                    "Example:\n"
+                    "archive download-sw /no-reload "
+                    "tftp://<server-ip>/<image-file.tar>"
+                )
             except Exception:
                 pass
+        else:
+            # Default placeholder for normal custom commands
+            if hasattr(self, "ap_cmd_box"):
+                try:
+                    self.ap_cmd_box.setPlaceholderText(
+                        "Enter AP CLI commands (one per line)"
+                    )
+                except Exception:
+                    pass
 
     def _export_ap_table(self):
         """
@@ -1864,7 +1976,7 @@ class MainWindow(QMainWindow):
             return
 
         # Prepare Excel file
-        folder = "data"
+        folder = DATA_DIR
         os.makedirs(folder, exist_ok=True)
         fn = os.path.join(folder, f"WlanPoller_AP_Table_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx")
 
@@ -1928,7 +2040,7 @@ class MainWindow(QMainWindow):
             return
 
         # Prepare Excel file
-        folder = "data"
+        folder = DATA_DIR
         os.makedirs(folder, exist_ok=True)
         fn = os.path.join(folder, f"WlanPoller_Vulnerable_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx")
 
@@ -1966,36 +2078,29 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self, "Export Failed", f"Failed to save Excel file: {e}")
 
     def _open_data_folder(self):
-        """
-        Open the 'data' folder in the OS file browser. Creates the folder if it does not exist.
-        Works on Windows (os.startfile), macOS (open), and Linux (xdg-open).
-        """
-        folder = os.path.abspath("data")
+
+        folder = str(DATA_DIR)
+
+
+        # Prefer last run folder if available
+        if hasattr(self, "last_status_file"):
+            try:
+                folder = os.path.dirname(self.last_status_file)
+            except Exception:
+                pass
+
         try:
             os.makedirs(folder, exist_ok=True)
-        except Exception as e:
-            try:
-                QMessageBox.warning(self, "Folder Error", f"Unable to create data folder: {e}")
-            except Exception:
-                print("Unable to create data folder:", e)
-            return
 
-        try:
             if sys.platform.startswith("win"):
-                # Windows
                 os.startfile(folder)
             elif sys.platform == "darwin":
-                # macOS
-                os.system(f"open \"{folder}\"")
+                os.system(f'open "{folder}"')
             else:
-                # Most Linux desktops
-                os.system(f"xdg-open \"{folder}\"")
-        except Exception as e:
-            try:
-                QMessageBox.warning(self, "Open Folder Failed", f"Could not open folder {folder}:\n{e}")
-            except Exception:
-                print(f"Could not open folder {folder}: {e}")
+                os.system(f'xdg-open "{folder}"')
 
+        except Exception as e:
+            QMessageBox.warning(self, "Open Folder Failed", str(e))
     def _on_workflow_change(self, v: str):
         self.workflow = v
 
@@ -2130,7 +2235,7 @@ class MainWindow(QMainWindow):
             # ---------------- AP TABLE (skip for WLC only) ----------------
             if not is_wlc_only:
                 try:
-                    #So AP Only mode never loads old WLC files.
+                    # So AP Only mode never loads old WLC files.
                     need_populate = (
                             hasattr(self, "ap_table")
                             and self.ap_table.rowCount() == 0
@@ -2474,7 +2579,7 @@ class MainWindow(QMainWindow):
                 return
 
             # determine latest data folder
-            data_root = "data"
+            data_root = DATA_DIR
             if not os.path.exists(data_root):
                 # nothing to search
                 out = "No 'data' folder found."
@@ -2614,7 +2719,7 @@ class MainWindow(QMainWindow):
 
         # ---------------- FTP ----------------
         ftp_visible = (
-                self.operation_type == "AP Only"
+                self.operation_type in ("AP Only", "WLC & AP")
                 and ap_mode_text == "AP Image Download"
         )
         if hasattr(self, "ftp_group"):
@@ -2658,7 +2763,6 @@ class MainWindow(QMainWindow):
 
         # allow Qt to finish geometry
 
-
     def _ui_progress_update(self, pct):
         if hasattr(self, "progress"):
             self.progress.setValue(pct)
@@ -2672,6 +2776,8 @@ class MainWindow(QMainWindow):
                     self.ap_table.resizeRowsToContents()
 
         super().changeEvent(event)
+
+
 def resource_path(relpath: str) -> str:
     """
     Return a filesystem path to `relpath` that works when running normally
@@ -2695,6 +2801,7 @@ def main():
     app.aboutToQuit.connect(win._stop_worker)
     win.show()
     sys.exit(app.exec())
+
 
 if __name__ == "__main__":
     main()

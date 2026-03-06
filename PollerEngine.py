@@ -13,16 +13,43 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Callable, Dict, List, Optional, Tuple
 import threading
-
+print(">>> LOADED PollerEngine FROM:", __file__)
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from netmiko import ConnectHandler
+
+
+
+
+import sys
 from pathlib import Path
 
+def get_app_base_dir():
+    """
+    Returns base directory where:
+    - WlanPollerGUI.app lives (macOS)
+    - WlanPollerGUI.exe lives (Windows)
+    - script folder when running source
+    """
 
-from pathlib import Path
+    if getattr(sys, "frozen", False):
 
-BASE_DIR = Path(__file__).resolve().parent
-CONFD = str(BASE_DIR / "confd")
+        exe = Path(sys.executable).resolve()
+
+        # macOS .app bundle
+        if exe.parent.name == "MacOS" and exe.parent.parent.name == "Contents":
+            return exe.parents[3]
+
+        return exe.parent
+
+    return Path(__file__).resolve().parent
+
+BASE_DIR = get_app_base_dir()
+
+CONFD = BASE_DIR / "confd"
+DATA_ROOT = BASE_DIR / "data"
+
+CONFD.mkdir(parents=True, exist_ok=True)
+DATA_ROOT.mkdir(parents=True, exist_ok=True)
 QCA_PREFIXES = (
     # Wi-Fi 6 (802.11ax) QCA-based
     "9117",
@@ -43,7 +70,7 @@ QCA_PREFIXES = (
     "9178",
     "9179",
 )
-os.makedirs(CONFD, exist_ok=True)
+
 def ensure_dir(path: str) -> str:
     os.makedirs(path, exist_ok=True)
     return path
@@ -51,11 +78,14 @@ def ensure_dir(path: str) -> str:
 
 def today_data_dir() -> str:
     now = datetime.now()
-    return ensure_dir(os.path.join("data", f"{now.year:04d}", f"{now.month:02d}", f"{now.day:02d}"))
+    path = DATA_ROOT / f"{now.year:04d}" / f"{now.month:02d}" / f"{now.day:02d}"
+    path.mkdir(parents=True, exist_ok=True)
+    return str(path)
 
+def _safe_write_append(path, text: str):
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
 
-def _safe_write_append(path: str, text: str):
-    ensure_dir(os.path.dirname(path) or ".")
     with open(path, "a", encoding="utf-8", errors="ignore") as f:
         f.write(text)
 
@@ -76,7 +106,17 @@ def _is_ipv4(s: str) -> bool:
         return True
     except Exception:
         return False
+def ssh_port_open(ip, port=22, timeout=1):
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(timeout)
 
+        result = sock.connect_ex((ip, port))
+        sock.close()
+
+        return result == 0
+    except Exception:
+        return False
 
 @dataclass
 class ApRow:
@@ -104,6 +144,22 @@ class IniStore:
             except configparser.MissingSectionHeaderError:
                 self._convert_legacy_to_ini()
         self._ensure_defaults()
+        # ---- MIGRATION FIX ----
+        migrated = False
+        if self.cfg.has_option("WLC", "WlcIpaddr"):
+            val = self.cfg.get("WLC", "WlcIpaddr")
+            self.cfg.set("WLC", "wlc_ip", val)
+            self.cfg.remove_option("WLC", "WlcIpaddr")
+            self.save()
+            migrated = True
+        if self.cfg.has_option("WLC", "wlcipaddr"):
+            val = self.cfg.get("WLC", "wlcipaddr")
+            self.cfg.set("WLC", "wlc_ip", val)
+            self.cfg.remove_option("WLC", "wlcipaddr")
+            self.save()
+            migrated = True
+        if migrated:
+            self.save()
 
     def _convert_legacy_to_ini(self):
         legacy: Dict[str, str] = {}
@@ -152,7 +208,7 @@ class IniStore:
             self.save()
 
     def save(self):
-        ensure_dir(os.path.dirname(self.path) or ".")
+        Path(self.path).parent.mkdir(parents=True, exist_ok=True)
         with open(self.path, "w", encoding="utf-8") as f:
             self.cfg.write(f)
 
@@ -254,14 +310,44 @@ class PollerEngine:
         self,
         log_cb: Optional[Callable[[str], None]] = None,
         progress_cb: Optional[Callable[[int], None]] = None,
-        ap_update_cb: Optional[Callable[[int, str, str, str], None]] = None,
+        ap_update_cb: Optional[Callable[[int, str, str, str, str], None]] = None,
     ):
-        ensure_dir(CONFD)
-        self.data_dir = today_data_dir()
-        self.ini = IniStore(os.path.join(CONFD, "config.ini"))
+        CONFD.mkdir(parents=True, exist_ok=True)
+        # ---------------- DATE + RUN BASED DATA DIRECTORY ----------------
+        now = datetime.now()
+
+        year = f"{now.year:04d}"
+        month = f"{now.month:02d}"
+        day = f"{now.day:02d}"
+        base_path = DATA_ROOT / year / month / day
+        base_path.mkdir(parents=True, exist_ok=True)
+        existing_runs = [
+            d for d in os.listdir(base_path)
+            if os.path.isdir(os.path.join(base_path, d)) and d.startswith("RUN")
+        ]
+
+        run_numbers = []
+        for d in existing_runs:
+            try:
+                run_numbers.append(int(d.replace("RUN", "")))
+            except:
+                pass
+
+        next_run = max(run_numbers) + 1 if run_numbers else 1
+
+        self.run_id = f"RUN{next_run}"
+        self.run_id = f"RUN{next_run}"
+
+        run_path = base_path / self.run_id
+        run_path.mkdir(parents=True, exist_ok=True)
+
+        self.data_dir = str(run_path)
+        # ------------------------------------------------------------------
+        self.ini = IniStore(str(CONFD / "config.ini"))
         self.log_cb = log_cb
         self.progress_cb = progress_cb
         self.ap_update_cb = ap_update_cb
+        self._log(f"[ENGINE] Using data directory: {self.data_dir}")
         self.success = 0
         self.failed = 0
         # Cooperative shutdown
@@ -272,6 +358,8 @@ class PollerEngine:
         self._open_sessions = []
         self.operation = "WLC & AP"
         self.workflow = ""
+        print("DEBUG DATA DIR:", self.data_dir)
+        print("DEBUG BASE DIR:", BASE_DIR)
     def _log(self, msg: str):
         if self.log_cb:
             self.log_cb(msg)
@@ -315,21 +403,23 @@ class PollerEngine:
 
 
     def _wlc_connect(self):
-        wlc_ip = (
-                self.ini.get("WLC", "wlc_ip") or
-                self.ini.get("WLC", "wlcipaddr") or
-                self.ini.get("WLC", "WlcIpaddr")
-        )
+        wlc_ip = self.ini.get("WLC", "wlc_ip")
 
         if not wlc_ip:
             raise ValueError("Missing WLC IP in config.ini ([WLC] wlc_ip)")
+        self._log(f"[WLC] Checking SSH port on {wlc_ip}...")
+        if not ssh_port_open(wlc_ip):
+            raise RuntimeError(f"WLC {wlc_ip} unreachable on port 22")
         dev = {
             "device_type": "cisco_ios",
             "host": wlc_ip,
             "username": self.ini.get("WLC", "wlc_user"),
             "password": self.ini.get("WLC", "wlc_pasw"),
-            # reduce connect timeout so we fail fast if unreachable
-            "timeout": 20,
+
+            "timeout": 10,
+            "conn_timeout": 10,
+            "banner_timeout": 10,
+            "auth_timeout": 10
         }
         self._log(f"[WLC] Connecting to {wlc_ip} ...")
         try:
@@ -468,7 +558,12 @@ class PollerEngine:
             "username": self.ini.get("AP", "ap_user"),
             "password": self.ini.get("AP", "ap_pasw"),
             "secret": self.ini.get("AP", "ap_enable"),
-            "timeout": 20,
+
+            "timeout": 15,
+            "conn_timeout": 15,
+            "banner_timeout": 15,
+            "auth_timeout": 15,
+
             "fast_cli": False,
         }
     @staticmethod
@@ -483,7 +578,10 @@ class PollerEngine:
     def _poll_one_ap(self, idx: int, ap: ApRow, device: str, cmds: List[str]):
         try:
             self._log(f"[AP] ({idx+1}) Connecting {ap.ip} ({ap.name}) ...")
+            if not ssh_port_open(ap.ip):
+                return idx, ap.ip, ap.model, "Fail: SSH unreachable"
             conn = ConnectHandler(**self._ap_connect_params(ap.ip,ap.model))
+            self._open_sessions.append(conn)
             conn.enable()
             # Disable paging; some APs use non-standard "more" prompts.
             try:
@@ -510,6 +608,13 @@ class PollerEngine:
             _safe_write_append(fname, header)
 
             for cmd in cmds:
+                if self._shutdown_event.is_set():
+                    return idx, ap.ip, ap.model, "Cancelled"
+                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                self._log(
+                    f"{timestamp} | {ap.ip:<15} | {ap.name:<15} | {cmd}"
+                )
+
                 _safe_write_append(fname, f"\n<cmd string='{cmd}'>\n\t{cmd}\n")
                 out = self._ap_send_command(conn, cmd, read_timeout=180)
                 _safe_write_append(fname, out + "\n")

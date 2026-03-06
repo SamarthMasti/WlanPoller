@@ -46,7 +46,11 @@ def primary_version_check(path: str) -> Tuple[Optional[str], Optional[bool]]:
     if not primary_image:
         return None, None
     try:
-        a, b, c, d = primary_image.split(".")
+        parts = primary_image.split(".")
+        if len(parts) < 4:
+            return primary_image, None
+
+        a, b, c, d = parts[:4]
         c_i = int(c); d_i = int(d)
         buggy = True
         if a == "17" and b == "12" and c_i <= 3:
@@ -81,9 +85,13 @@ def backup_version_check(path: str) -> Tuple[Optional[str], Optional[bool]]:
             backup_image = line.split(":", 1)[1].strip()
             break
     if not backup_image:
-        return None, False
+        return None, None
     try:
-        a, b, c, d = backup_image.split(".")
+        parts = backup_image.split(".")
+        if len(parts) < 4:
+            return backup_image, None
+
+        a, b, c, d = parts[:4]
         c_i = int(c); d_i = int(d)
         buggy = True
         if a == "17" and b == "12" and c_i <= 3:
@@ -153,30 +161,35 @@ def image_integrity_failed(path: str) -> Optional[bool]:
 
 def part2_mem_available_mb(path: str) -> Tuple[Optional[float], Optional[bool]]:
     target = "/dev/ubivol/part2"
+
     for line in _read_lines(path):
         if target not in line:
             continue
+
         parts = line.split()
         if len(parts) < 4:
             return None, None
-        mem_str = parts[3].strip()
-        if not mem_str:
+
+        mem_str = parts[3].strip().lower()
+
+        m = re.match(r"([0-9.]+)\s*([gmk]?)", mem_str)
+        if not m:
             return None, None
-        suffix = mem_str[-1].lower()
-        number_part = mem_str.rstrip(string.ascii_letters)
-        try:
-            value = float(number_part)
-        except ValueError:
-            return None, None
+
+        value = float(m.group(1))
+        suffix = m.group(2)
+
         if suffix == "g":
-            mb = value * 1024.0
+            mb = value * 1024
         elif suffix == "k":
-            mb = value / 1024.0
+            mb = value / 1024
         elif suffix == "m":
             mb = value
         else:
             mb = value
-        return mb, not (mb > 80.0)
+
+        return mb, mb < 80.0
+
     return None, None
 
 
@@ -247,7 +260,7 @@ def analyze_logs(log_dir: str):
                         if mem_low:
                             recovery_option_image_partition_swap.append((ap_name, ap_model_sig,ap_ip))
                     else:
-                        if mem_low and mem_mb and mem_mb < 20.0:
+                        if mem_low and mem_mb is not None and mem_mb < 20.0:
                             recovery_option_partition_safe_but_clean_up_reccomended.append((ap_name, ap_model_sig,ap_ip))
                 else:
                     if back_buggy:
@@ -273,7 +286,11 @@ def analyze_logs(log_dir: str):
 
         with open(output_file, "a", encoding="utf-8") as f:
 
-            f.write("\n=========== AP FLASH CHECK STATUS SUMMARY ===========\n\n")
+            f.write("\n============================================================\n")
+            f.write(f"Flash Checker Run: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+            f.write("============================================================\n\n")
+
+            f.write("=========== AP FLASH CHECK STATUS SUMMARY ===========\n\n")
 
             # Define headers in correct order
             headers = [
@@ -367,25 +384,17 @@ def analyze_logs(log_dir: str):
 
     summary_text = "\n".join(summary_lines)
 
-    summary_filename = os.path.join(
-        log_dir,
-        f"Status_check_results_{datetime.now().day}.log"
-    )
+    summary_filename = output_file
 
 
 
 
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-    header = (
-        "\n"
-        "============================================================\n"
-        f"Flash Checker Run: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
-        "------------------------------------------------------------\n"
-    )
+
 
     with open(summary_filename, "a", encoding="utf-8") as f:
-        f.write(header)
+        f.write("\n\n=========== QUICK RECOVERY SUMMARY ===========\n\n")
         f.write(summary_text)
     print("DEBUG summary_filename:", summary_filename)
 

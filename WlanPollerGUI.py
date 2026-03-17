@@ -440,13 +440,13 @@ class PollerWorker(QThread):
                 if self.workflow == "AP Flash Checker" and analyze_logs:
                     self.log.emit("")
                     self.log.emit("=" * 56)
-                    self.log.emit("  RUNNING FLASH VULNERABILITY ANALYSIS...")
+                    self.log.emit("  RUNNING FLASH SUSCEPTIBILITY ANALYSIS...")
                     self.log.emit("  Please wait — scanning AP output logs.")
                     self.log.emit("=" * 56)
                     self.progress.emit(0)
                     vuln_rows, _ = analyze_logs(str(summary["data_dir"]))
                     summary["vulnerable_rows"] = vuln_rows
-                    self.log.emit(f"  Vulnerability scan complete. Found: {len(vuln_rows)} vulnerable AP(s)")
+                    self.log.emit(f"  Susceptibility scan complete. Found: {len(vuln_rows)} vulnerable AP(s)")
                     self.log.emit("=" * 56)
                     self.progress.emit(100)
                 summary["end"] = datetime.now()
@@ -497,13 +497,13 @@ class PollerWorker(QThread):
                 if self.workflow == "AP Flash Checker" and analyze_logs:
                     self.log.emit("")
                     self.log.emit("=" * 56)
-                    self.log.emit("  RUNNING FLASH VULNERABILITY ANALYSIS...")
+                    self.log.emit(" RUNNING FLASH SUSCEPTIBILITY ANALYSIS...")
                     self.log.emit("  Please wait — scanning AP output logs.")
                     self.log.emit("=" * 56)
                     self.progress.emit(0)
                     vuln_rows, _ = analyze_logs(str(summary["data_dir"]))
                     summary["vulnerable_rows"] = vuln_rows
-                    self.log.emit(f"  Vulnerability scan complete. Found: {len(vuln_rows)} vulnerable AP(s)")
+                    self.log.emit(f"  Scan complete. Found: {len(vuln_rows)} susceptible AP(s)")
                     self.log.emit("=" * 56)
                     self.progress.emit(100)
 

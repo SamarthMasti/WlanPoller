@@ -1,0 +1,13 @@
+<run timestamp='2026-03-12T12:36:46.717655' device='eWLC' hostname='WLC' model='eWLC-9800' version='None'>
+
+<cmd string='show clock'>
+	show clock
+12:36:46.165 IST Thu Mar 12 2026
+
+<cmd string='sleep_5'>
+	sleep_5
+% Bad IP address or host name% Unknown command or computer name, or unable to find computer address
+
+<cmd string='show clock'>
+	show clock
+12:36:46.357 IST Thu Mar 12 2026

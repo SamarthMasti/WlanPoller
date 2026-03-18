@@ -1,0 +1,10 @@
+=========== AP FLASH VULNERABILITY REPORT ===========
+Generated: 2026-03-09 10:34:42.364946
+Source Directory: data\2026\03\05\RUN_test
+=====================================================
+
+AP Name                  Model       IP Address        Recovery Action
+--------------------------------------------------------------------------------
+P3944-WA-FL2-6           (ap1g6a)    10.55.254.131     Image integrity check has failed for these APs
+WCHZURITPS-B-011-G       (ap1g6a)    10.96.78.135      Image integrity check has failed for these APs
+WCHZURITPS-B-011-H       (ap1g6a)    10.96.78.237      Image integrity check has failed for these APs

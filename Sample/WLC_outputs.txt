@@ -1,0 +1,32 @@
+<run timestamp='2026-02-18T10:48:04.417021' device='eWLC' hostname='WLC' model='eWLC-9800' version='None'>
+
+<cmd string='show ap summary'>
+	show ap summary
+Number of APs: 4
+
+CC = Country Code
+RD = Regulatory Domain
+
+AP Name                          Slots AP Model             Ethernet MAC   Radio MAC      CC   RD   IP Address                                State        Location
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Ap2802AigleRnD                   2     AIR-AP2802I-B-K9     cc16.7ede.c7f2 2c33.112b.3280 US   -B   192.168.0.211                             Registered   Aigle RnD Lab                   
+Ap9105                           2     C9105AXI-B           5c71.0dec.f340 3c41.0e3a.ca00 IN   -B   192.168.0.212                             Registered   AigleStudio                     
+Ap3800e_11StaticIp               2     AIR-AP3802E-A-K9     7872.5d1c.2c10 7872.5d1c.4fa0 US   -A   192.168.0.213                             Registered   Terrace Ext                     
+CW9166                           3     CW9166D1-B           6849.927a.3e30 fc58.9a19.1320 US   -B   192.168.0.164                             Registered   default location                
+
+<run timestamp='2026-02-18T10:48:53.562929' device='eWLC' hostname='WLC' model='eWLC-9800' version='None'>
+
+<cmd string='show ap summary'>
+	show ap summary
+Number of APs: 4
+
+CC = Country Code
+RD = Regulatory Domain
+
+AP Name                          Slots AP Model             Ethernet MAC   Radio MAC      CC   RD   IP Address                                State        Location
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Ap2802AigleRnD                   2     AIR-AP2802I-B-K9     cc16.7ede.c7f2 2c33.112b.3280 US   -B   192.168.0.211                             Registered   Aigle RnD Lab                   
+Ap9105                           2     C9105AXI-B           5c71.0dec.f340 3c41.0e3a.ca00 IN   -B   192.168.0.212                             Registered   AigleStudio                     
+Ap3800e_11StaticIp               2     AIR-AP3802E-A-K9     7872.5d1c.2c10 7872.5d1c.4fa0 US   -A   192.168.0.213                             Registered   Terrace Ext                     
+CW9166                           3     CW9166D1-B           6849.927a.3e30 fc58.9a19.1320 US   -B   192.168.0.164                             Registered   default location                
+

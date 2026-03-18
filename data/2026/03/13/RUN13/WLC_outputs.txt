@@ -1,0 +1,12 @@
+<run timestamp='2026-03-13T12:37:41.813046' device='eWLC' hostname='WLC' model='eWLC-9800' version='None'>
+
+<cmd string='show clock'>
+	show clock
+12:37:42.363 IST Fri Mar 13 2026
+
+<cmd string='sleep_5'>
+	[SLEEP] 5 seconds delay
+
+<cmd string='show clock'>
+	show clock
+12:37:47.495 IST Fri Mar 13 2026

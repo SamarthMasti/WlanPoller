@@ -1,0 +1,10 @@
+<run timestamp='2026-03-12T13:01:49.427050' device='eWLC' hostname='WLC' model='eWLC-9800' version='None'>
+
+<cmd string='show ap smmary'>
+	show ap smmary
+             ^
+% Invalid input detected at '^' marker.
+
+
+<cmd string='sleep_5'>
+	[SLEEP] 5 seconds delay

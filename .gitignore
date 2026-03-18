@@ -1,10 +1,30 @@
+# Virtual environments
 venv/
 venv314/
+
+# Python cache
 __pycache__/
 *.pyc
-*.log
-dist/
+
+# Build / packaging
 build/
+dist/
 *.spec
+*.zip
+
+# Compiled binaries
+*.pyd
+
+# Generated C files
+*.c
+
+# Logs / outputs
+*.log
+*.txt
+
+# OS files
 .DS_Store
+Thumbs.db
+
+# Env
 .env

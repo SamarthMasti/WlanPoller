@@ -446,7 +446,7 @@ class PollerWorker(QThread):
                     self.progress.emit(0)
                     vuln_rows, _ = analyze_logs(str(summary["data_dir"]))
                     summary["vulnerable_rows"] = vuln_rows
-                    self.log.emit(f"  Susceptibility scan complete. Found: {len(vuln_rows)} vulnerable AP(s)")
+                    self.log.emit(f"  Susceptibility scan complete. Found: {len(vuln_rows)} Susceptible AP(s)")
                     self.log.emit("=" * 56)
                     self.progress.emit(100)
                 summary["end"] = datetime.now()
@@ -2525,6 +2525,8 @@ class MainWindow(QMainWindow):
                         pass
 
                 vuln_rows = summary.get("vulnerable_rows", [])
+                # Update AP table with correct model from parser
+
                 vuln_count = len(vuln_rows)
 
                 if hasattr(self, "run_log"):
@@ -2552,7 +2554,7 @@ class MainWindow(QMainWindow):
                     need_populate = (
                             hasattr(self, "ap_table")
                             and self.ap_table.rowCount() == 0
-                            and summary.get("operation") != "AP Only"
+
                     )
 
                     if need_populate:
@@ -2676,6 +2678,20 @@ class MainWindow(QMainWindow):
                             self.run_log.append(f"[DEBUG] AP table population error: {e}")
                         except Exception:
                             pass
+            # ---------------- FINAL MODEL CORRECTION ----------------
+            vuln_rows = summary.get("vulnerable_rows", [])
+
+            for vr in vuln_rows:
+                ip = vr.get("ap_ip")
+                model = vr.get("ap_model")
+
+                for r in range(self.ap_table.rowCount()):
+                    ip_item = self.ap_table.item(r, 2)
+                    if ip_item and ip_item.text() == ip:
+                        if model and model != "UNKNOWN":
+                            self.ap_table.setItem(r, 1, QTableWidgetItem(model))
+                        break
+
 
             # ---------------- UNLOCK UI ----------------
             if hasattr(self, "sidebar"):
@@ -2749,7 +2765,18 @@ class MainWindow(QMainWindow):
                 name = self.ap_name_map.get(ip, "")
 
             self.ap_table.setItem(target_row, 0, QTableWidgetItem(name))
-            self.ap_table.setItem(target_row, 1, QTableWidgetItem(model))
+            # Prevent overwriting correct model with UNKNOWN
+            existing_item = self.ap_table.item(target_row, 1)
+            existing_model = existing_item.text() if existing_item else ""
+
+            if model and model != "UNKNOWN":
+                final_model = model
+            elif existing_model and existing_model != "UNKNOWN":
+                final_model = existing_model
+            else:
+                final_model = "UNKNOWN"
+
+            self.ap_table.setItem(target_row, 1, QTableWidgetItem(final_model))
             self.ap_table.setItem(target_row, 2, QTableWidgetItem(ip))
             self.ap_table.setItem(target_row, 3, QTableWidgetItem(status))
             self.ap_table.resizeRowToContents(target_row)

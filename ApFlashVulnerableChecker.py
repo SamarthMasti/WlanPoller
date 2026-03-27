@@ -245,30 +245,69 @@ def analyze_logs(log_dir: str):
         # Recovery Logic (UNCHANGED)
         # ------------------------------
 
+        ap_failures = []  # ✅ NEW per-AP failure collector
+
         if integ_fail is True:
-            recovery_option_image_integrity_check_failed.append((ap_name, ap_model_sig,ap_ip))
-            continue
+            ap_failures.append(("IMAGE_INTEGRITY", "Image integrity failed"))
 
         if mem_mb is not None and mem_mb < 20.0:
-            recovery_option_devshell.append((ap_name, ap_model_sig,ap_ip))
-            continue
+            ap_failures.append(("LOW_MEMORY_CRITICAL", "Very low memory (<20MB)"))
 
         if ap_model_check:
             if cnss:
                 if prim_buggy:
                     if part1:
                         if mem_low:
-                            recovery_option_image_partition_swap.append((ap_name, ap_model_sig,ap_ip))
+                            ap_failures.append(("PARTITION_SWAP", "Partition swap required"))
                     else:
                         if mem_low and mem_mb is not None and mem_mb < 20.0:
-                            recovery_option_partition_safe_but_clean_up_reccomended.append((ap_name, ap_model_sig,ap_ip))
+                            ap_failures.append(("LOW_FLASH", "Low flash cleanup needed"))
+                        else:
+                            if back_buggy:
+                                if mem_low:
+                                    ap_failures.append(("BUGGY_BACKUP_LOW_MEM", "Backup buggy + low flash"))
+                                else:
+                                    ap_failures.append(("BUGGY_BACKUP", "Backup image is buggy"))
                 else:
-                    if back_buggy:
-                        recovery_option_simple_archive_download.append((ap_name, ap_model_sig,ap_ip))
-            else:
-                if back_buggy:
-                    recovery_option_simple_archive_download.append((ap_name, ap_model_sig,ap_ip))
+                        if back_buggy:
+                                if mem_low:
+                                    ap_failures.append(("BUGGY_BACKUP_LOW_MEM", "Backup buggy + low flash"))
+                                else:
+                                    ap_failures.append(("BUGGY_BACKUP", "Backup image is buggy"))
+        if ap_failures:
+            if len(ap_failures) == 1:
+                # ✅ KEEP EXISTING BEHAVIOR (NO CHANGE)
+                code, _ = ap_failures[0]
 
+                if code == "IMAGE_INTEGRITY":
+                    recovery_option_image_integrity_check_failed.append((ap_name, ap_model_sig, ap_ip))
+
+                elif code == "LOW_MEMORY_CRITICAL":
+                    recovery_option_devshell.append((ap_name, ap_model_sig, ap_ip))
+
+                elif code == "PARTITION_SWAP":
+                    recovery_option_image_partition_swap.append((ap_name, ap_model_sig, ap_ip))
+
+
+                elif code == "BUGGY_BACKUP":
+
+                    recovery_option_simple_archive_download.append((ap_name, ap_model_sig, ap_ip))
+
+
+                elif code == "BUGGY_BACKUP_LOW_MEM":
+
+                    recovery_option_partition_safe_but_clean_up_reccomended.append((ap_name, ap_model_sig, ap_ip))
+
+                elif code == "LOW_FLASH":
+                    recovery_option_partition_safe_but_clean_up_reccomended.append((ap_name, ap_model_sig, ap_ip))
+
+            else:
+                # ✅ MULTIPLE FAILURES → COMBINED ENTRY
+                failure_desc = ", ".join([desc for _, desc in ap_failures])
+
+                recovery_option_devshell.append(
+                    (ap_name, f"{ap_model_sig} [MULTI: {failure_desc}]", ap_ip)
+                )
     # ---------------------------------------------------
     # Write Status Check Summary File
     # ---------------------------------------------------

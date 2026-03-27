@@ -1012,3 +1012,12 @@ class PollerEngine:
 
         self._log(f"[AP] Done. Success={self.success} Fail={self.failed} Time={elapsed}s")
         return results
+
+    def _get_wlc_sections(self) -> list:
+        """Returns all WLC sections from ini e.g. ['WLC', 'WLC2', 'WLC3']"""
+        sections = []
+        for sec in self.ini.cfg.sections():
+            if sec == "WLC" or (sec.startswith("WLC") and sec[3:].isdigit()):
+                if self.ini.get(sec, "wlc_ip"):  # only include if IP is set
+                    sections.append(sec)
+        return sorted(sections)

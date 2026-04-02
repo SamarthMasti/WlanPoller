@@ -26,7 +26,7 @@ from PollerEngine import PollerEngine
 from PollerEngine import decrypt_value, encrypt_value
 from PySide6.QtGui import QColor
 APP_NAME = "CISCO WLAN POLLER GUI"
-APP_VERSION = "v5.05"
+APP_VERSION = "v5.06"
 try:
     from ApFlashVulnerableChecker import analyze_logs
 except ImportError as e:
@@ -367,6 +367,7 @@ class PollerWorker(QThread):
         self.ap_mode = ap_mode
     def run(self):
         engine = None
+        
         try:
             # create engine inside try/except so creation failures are visible
             try:
@@ -473,8 +474,8 @@ class PollerWorker(QThread):
 
                 summary.update({
                     "ap_total": len(ap_rows),
-                    "ap_success": getattr(engine, "success", None),
-                    "ap_failed": getattr(engine, "failed", None),
+                    "ap_success": engine.success,
+                    "ap_failed": engine.failed,
                     "data_dir": getattr(engine, "data_dir", ""),
                     "workflow": self.workflow
                 })
@@ -511,63 +512,129 @@ class PollerWorker(QThread):
                 return
             # --- WLC & AP ---
             if self.operation_type == "WLC & AP":
-                if self.wlc_cmds:
-                    summary["wlc_output"] = engine.run_wlc_cmds(self.wlc_cmds)
-                full = engine.fetch_full_ap_list()
-                summary["TotalApCnt"] = len(full)
-                filtered = full
-                if self.ap_filter_mode == "SITE":
-                    filtered, total_from_tag = engine.filter_by_site_tag(full, self.site_tag)
-                    summary["TotalApCnt"] = total_from_tag
-                    summary["SiteTagNameFilter"] = self.site_tag
-                elif self.ap_filter_mode == "MODEL":
-                    filtered = engine.filter_by_model_group(full, self.model_group)
-                    summary["ApFilter"] = self.model_group
+                import threading
+                from concurrent.futures import ThreadPoolExecutor, as_completed as _as_completed
 
-                engine.write_filtered_ap_list(filtered)
-                if not filtered:
-                    raise ValueError("Filtered AP list is empty.")
+                wlc_sections = engine._get_wlc_sections_list()
+                # ── Headless guard: verify ap_cmds are not empty before starting ──
                 if not self.ap_cmds:
-                    raise ValueError("AP Cmd List is empty.")
-                # Run AP stage ONLY if user actually selected AP operations
-                if self.operation_type != "WLC Only":
+                    raise ValueError(
+                        "[WLC & AP] AP Cmd List is empty. "
+                        "Check that run_profile.json contains ap_cmds and the profile was saved correctly."
+                    )
+                self.log.emit(f"[WORKER] WLC sections found: {wlc_sections}")
+                self.log.emit(f"[WORKER] AP commands to run: {self.ap_cmds}")
+                self.log.emit(f"[WORKER] WLC commands to run: {self.wlc_cmds}")
+                if not wlc_sections:
+                    raise ValueError(
+                        "[WLC & AP] No WLC sections found in config.ini. "
+                        "Credentials may not have been saved correctly."
+                    )
+                all_filtered = []
+                all_filtered_lock = threading.Lock()
+                _summary_lock = threading.Lock()
 
-                    self.log.emit("[WORKER] Starting AP polling stage...")
-                    engine.run_ap_poller(filtered, self.ap_device, self.ap_cmds)
+                total_success = 0
+                total_failed = 0
+                _count_lock = threading.Lock()
 
-                    summary.update({
-                        "ap_total": len(filtered),
-                        "ap_success": getattr(engine, "success", None),
-                        "ap_failed": getattr(engine, "failed", None),
-                        "data_dir": getattr(engine, "data_dir", "")
-                    })
+                def _process_one_wlc(section):
+                    """Fetch APs from one WLC, apply filters, then immediately poll those APs."""
 
-                else:
-                    self.log.emit("[WORKER] WLC Only selected — skipping AP SSH polling")
-                    summary.update({
-                        "ap_total": 0,
-                        "ap_success": 0,
-                        "ap_failed": 0,
-                        "data_dir": getattr(engine, "data_dir", "")
-                    })
+                    # ---- Step 1: Run WLC commands ----
+                    if self.wlc_cmds:
+                        engine._run_wlc_cmds_for_section(section, self.wlc_cmds)
+                
+                    # ---- Step 2: Fetch AP list ----
+                    rows = engine._fetch_ap_list_for_section(section)
 
-                if (
-                        self.workflow == "AP Flash Checker"
-                        and analyze_logs
-                        and not (getattr(self, "enable_tmp_cleanup", False) or getattr(self, "enable_reload", False))
-                    ):
-                    self.log.emit("")
+                    # ---- Step 3: Apply filters ----
+                    local_total = len(rows)
+                    site_tag_used = ""
+
+                    if self.ap_filter_mode == "SITE":
+                        rows, local_total = engine._filter_by_site_tag_section(
+                            section, rows, self.site_tag
+                        )
+                        site_tag_used = self.site_tag
+                    elif self.ap_filter_mode == "MODEL":
+                        rows = engine.filter_by_model_group(rows, self.model_group)
+
+                    with _summary_lock:
+                        if self.ap_filter_mode == "SITE":
+                            summary["TotalApCnt"] = summary.get("TotalApCnt", 0) + local_total
+                            summary["SiteTagNameFilter"] = self.site_tag
+
+                    if not rows:
+                        self.log.emit(
+                            f"[WORKER] {section}: AP list is EMPTY. "
+                            f"'show ap summary' returned 0 APs or WLC SSH failed. "
+                            f"Check WLC connectivity and credentials in config.ini."
+                        )
+                        return 0, 0
+
+                    # ---- Step 4: Write filtered list (thread-safe append) ----
+                    with all_filtered_lock:
+                        all_filtered.extend(rows)
+
+                    # ---- Step 5: Poll APs for THIS WLC immediately (parallel within WLC) ----
+                    self.log.emit(
+                        f"[WORKER] {section}: starting AP polling for {len(rows)} APs..."
+                    )
+                    s, f = engine.run_ap_poller(rows, self.ap_device, self.ap_cmds)
+                    self.log.emit(
+                        f"[WORKER] {section}: AP polling done. Success={s} Failed={f}"
+                    )
+                    return s, f
+
+                # ---- Run all WLCs in parallel ----
+                self.log.emit(
+                    f"[WORKER] Starting {len(wlc_sections)} WLC(s) in parallel..."
+                )
+
+                with ThreadPoolExecutor(max_workers=len(wlc_sections)) as wlc_executor:
+                    wlc_futures = {
+                        wlc_executor.submit(_process_one_wlc, sec): sec
+                        for sec in wlc_sections
+                    }
+                    for fut in _as_completed(wlc_futures):
+                        sec = wlc_futures[fut]
+                        try:
+                            s, f = fut.result()
+                            with _count_lock:
+                                total_success += s
+                                total_failed += f
+                        except Exception as e:
+                            self.log.emit(f"[WORKER] {sec} failed: {e}")
+
+                # ---- Write combined filtered list after all WLCs done ----
+                if all_filtered:
+                    engine.write_filtered_ap_list(all_filtered)
+
+                if not all_filtered:
+                    raise ValueError("Filtered AP list is empty.")
+
+                # ---- Flash checker analysis ----
+                if (self.workflow == "AP Flash Checker" and analyze_logs and
+                        not (getattr(self, "enable_tmp_cleanup", False) or
+                            getattr(self, "enable_reload", False))):
                     self.log.emit("=" * 56)
                     self.log.emit(" RUNNING FLASH SUSCEPTIBILITY ANALYSIS...")
-                    self.log.emit("  Please wait — scanning AP output logs.")
-                    self.log.emit("=" * 56)
                     self.progress.emit(0)
-                    vuln_rows, _ = analyze_logs(str(summary["data_dir"]))
+                    vuln_rows, _ = analyze_logs(str(engine.data_dir))
                     summary["vulnerable_rows"] = vuln_rows
-                    self.log.emit(f"  Scan complete. Found: {len(vuln_rows)} susceptible AP(s)")
-                    self.log.emit("=" * 56)
+                    self.log.emit(
+                        f"  Scan complete. Found: {len(vuln_rows)} susceptible AP(s)"
+                    )
                     self.progress.emit(100)
 
+                summary.update({
+                    "ap_total": len(all_filtered),
+                    "ap_success": total_success,
+                    "ap_failed": total_failed,
+                    "data_dir": engine.data_dir,
+                    "TotalApCnt": summary.get("TotalApCnt", len(all_filtered)),
+                })
                 summary["end"] = datetime.now()
                 self.finished_ok.emit(summary)
                 return
@@ -644,6 +711,7 @@ class MainWindow(QMainWindow):
         self.ap_list_file = ""
         self.ap_list_path = ""
         self.run_count = 0
+        self.headless_mode = False  # set True when launched with --run-profile
         self.wlc_cmds: List[str] = []   # multi-WLC list
         if IniStore:
             self.ini = IniStore(CONFIG_FILE)
@@ -801,6 +869,177 @@ class MainWindow(QMainWindow):
             self.run_log.append("\n".join(header_block))
         except Exception:
             pass
+    def _load_profile_and_run(self):
+        import json
+        profile_path = CONFD_DIR / "run_profile.json"
+
+        if not profile_path.exists():
+            print(f"[HEADLESS] ERROR: No profile found at {profile_path}")
+            QApplication.quit()
+            return
+
+        try:
+            with open(str(profile_path), "r", encoding="utf-8") as f:
+                profile = json.load(f)
+        except Exception as e:
+            print(f"[HEADLESS] ERROR: Failed to load profile: {e}")
+            QApplication.quit()
+            return
+
+        # Restore state from profile
+        self.operation_type  = profile.get("operation_type",  "WLC & AP")
+        self.workflow        = profile.get("workflow",         "Custom CLI Commands")
+        self.ap_mode         = profile.get("ap_mode",          "AP Custom Cmd List")
+        self.ap_filter_mode  = profile.get("ap_filter_mode",   "NONE")
+        self.site_tag        = profile.get("site_tag",          "")
+        self.model_group     = profile.get("model_group",       "All AP Models")
+        self.ap_device       = profile.get("ap_device",         "cos_qca")
+        self.ap_list_file    = profile.get("ap_list_file",      "")
+        self.ap_list_path    = self.ap_list_file
+        self.wlc_cmds        = profile.get("wlc_cmds",          [])
+        self.ap_cmds         = profile.get("ap_cmds",           [])
+
+        print(f"[HEADLESS] Profile loaded: op={self.operation_type} workflow={self.workflow}")
+
+        # ── Sync operation dropdown so _on_operation_change fires correctly ──
+        try:
+            if hasattr(self, "op_dd"):
+                idx = {"WLC Only": 0, "WLC & AP": 1, "AP Only": 2}.get(self.operation_type, 1)
+                self.op_dd.blockSignals(True)
+                self.op_dd.setCurrentIndex(idx)
+                self.op_dd.blockSignals(False)
+        except Exception:
+            pass
+
+        # ── Rebuild WLC entries to match what is in config.ini ──
+        # Credentials live only in config.ini (never in the profile).
+        # We need the wlc_entries widgets filled so _save_creds_silent works.
+        try:
+            if self.ini and self.operation_type in ("WLC Only", "WLC & AP"):
+                # Collect all WLC sections that have an IP set
+                wlc_sections = []
+                for sec in self.ini.cfg.sections():
+                    if sec == "WLC" or (sec.startswith("WLC") and sec[3:].isdigit()):
+                        if self.ini.get(sec, "wlc_ip"):
+                            wlc_sections.append(sec)
+                wlc_sections.sort(key=lambda s: 0 if s == "WLC" else int(s[3:]))
+
+                # Remove all existing entries except the first placeholder
+                while len(self.wlc_entries) > 0:
+                    entry = self.wlc_entries.pop()
+                    try:
+                        entry["widget"].setParent(None)
+                        entry["widget"].deleteLater()
+                    except Exception:
+                        pass
+
+                # Re-add one entry per WLC section found in ini
+                for sec in wlc_sections:
+                    self._add_wlc_entry()
+
+                # Fill in the credentials from ini
+                for i, sec in enumerate(wlc_sections):
+                    if i < len(self.wlc_entries):
+                        self.wlc_entries[i]["ip"].setText(self.ini.get(sec, "wlc_ip"))
+                        self.wlc_entries[i]["user"].setText(self.ini.get(sec, "wlc_user"))
+                        self.wlc_entries[i]["pasw"].setText(self.ini.get(sec, "wlc_pasw"))
+                        print(f"[HEADLESS] Loaded creds for {sec}: {self.ini.get(sec, 'wlc_ip')}")
+
+        except Exception as e:
+            print(f"[HEADLESS] Warning: could not rebuild WLC entries: {e}")
+
+        # ── Fill AP credential widgets ──
+        try:
+            if self.ini and self.operation_type in ("WLC & AP", "AP Only"):
+                if hasattr(self, "ap_user"):
+                    self.ap_user.setText(self.ini.get("AP", "ap_user"))
+                if hasattr(self, "ap_pass"):
+                    self.ap_pass.setText(self.ini.get("AP", "ap_pasw"))
+                if hasattr(self, "ap_enable"):
+                    self.ap_enable.setText(self.ini.get("AP", "ap_enable"))
+        except Exception as e:
+            print(f"[HEADLESS] Warning: could not load AP creds: {e}")
+
+        # ── Sync workflow dropdown ──
+        # ── Sync workflow dropdown ──
+        # IMPORTANT: save workflow before calling _update_workflow_dropdown
+        # because that method resets self.workflow to index 0 of the dropdown
+        saved_workflow = self.workflow
+        try:
+            self._update_workflow_dropdown()
+            if hasattr(self, "workflow_dd"):
+                idx = self.workflow_dd.findText(saved_workflow)
+                if idx >= 0:
+                    self.workflow_dd.blockSignals(True)
+                    self.workflow_dd.setCurrentIndex(idx)
+                    self.workflow_dd.blockSignals(False)
+                else:
+                    print(f"[HEADLESS] WARNING: workflow '{saved_workflow}' not found in dropdown")
+        except Exception:
+            pass
+        # Force restore workflow state after dropdown sync (dropdown signals may have changed it)
+        self.workflow = saved_workflow
+        print(f"[HEADLESS] workflow restored to: '{self.workflow}'")
+
+        print(f"[HEADLESS] Starting run automatically...")
+        # ── Verification: log what will be used ──
+        print(f"[HEADLESS] wlc_entries count: {len(self.wlc_entries)}")
+        for i, e in enumerate(self.wlc_entries):
+            print(f"[HEADLESS]   WLC{i+1}: ip='{e['ip'].text()}' user='{e['user'].text()}' pasw_len={len(e['pasw'].text())}")
+        print(f"[HEADLESS] wlc_cmds: {self.wlc_cmds}")
+        print(f"[HEADLESS] ap_cmds: {self.ap_cmds}")
+        print(f"[HEADLESS] ap_list_file: '{self.ap_list_file}'")
+        print(f"[HEADLESS] operation_type: '{self.operation_type}'")
+        # ── Sync WLC cmd box so _start_run reads commands correctly ──────────
+        try:
+            if hasattr(self, "wlc_cmd_box") and self.wlc_cmds:
+                self.wlc_cmd_box.blockSignals(True)
+                self.wlc_cmd_box.setPlainText("\n".join(self.wlc_cmds))
+                self.wlc_cmd_box.blockSignals(False)
+                print(f"[HEADLESS] wlc_cmd_box populated with {len(self.wlc_cmds)} commands")
+        except Exception as e:
+            print(f"[HEADLESS] Warning: wlc_cmd_box sync failed: {e}")
+
+        # ── Sync AP cmd box so _start_run reads commands correctly ───────────
+        try:
+            if hasattr(self, "ap_cmd_box") and self.ap_cmds:
+                self.ap_cmd_box.blockSignals(True)
+                self.ap_cmd_box.setPlainText("\n".join(self.ap_cmds))
+                self.ap_cmd_box.blockSignals(False)
+                print(f"[HEADLESS] ap_cmd_box populated with {len(self.ap_cmds)} commands")
+        except Exception as e:
+            print(f"[HEADLESS] Warning: ap_cmd_box sync failed: {e}")
+        # ── Force reload ini so engine picks up freshly written credentials ──
+        try:
+            if self.ini:
+                self.ini.cfg.read(str(CONFD_DIR / "config.ini"), encoding="utf-8")
+                print(f"[HEADLESS] config.ini reloaded")
+                # Verify WLC sections exist
+                for sec in self.ini.cfg.sections():
+                    if sec == "WLC" or (sec.startswith("WLC") and sec[3:].isdigit()):
+                        print(f"[HEADLESS] INI section [{sec}]: ip={self.ini.get(sec, 'wlc_ip')}")
+        except Exception as e:
+            print(f"[HEADLESS] Warning: ini reload failed: {e}")
+        QTimer.singleShot(500, self._start_run)
+        
+    def _save_run_log_headless(self):
+        """Silently save run log to data/ folder — used in headless mode."""
+        try:
+            folder = DATA_DIR
+            os.makedirs(folder, exist_ok=True)
+            ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+            fn = os.path.join(folder, f"WlanPoller_HeadlessLog_{ts}.txt")
+            txt = ""
+            if hasattr(self, "run_log") and self.run_log is not None:
+                try:
+                    txt = self.run_log.toPlainText()
+                except Exception:
+                    txt = ""
+            with open(fn, "w", encoding="utf-8") as f:
+                f.write(txt)
+            print(f"[HEADLESS] Log saved to: {fn}")
+        except Exception as e:
+            print(f"[HEADLESS] Log save failed: {e}")
     def _build_per_wlc_cmd_boxes(self):
 
         layout = self.per_wlc_cmd_section.layout()
@@ -1402,8 +1641,13 @@ class MainWindow(QMainWindow):
         confirm.setProperty("nav", True)
         confirm.clicked.connect(self._start_run)
 
+        # ── "Run Periodically" checkbox ──────────────────────
+        self.chk_run_periodically = QCheckBox("Save as Scheduled Profile")
+        self.chk_run_periodically.setStyleSheet("font-size:11px; color:#374151;")
+
         row.addWidget(back)
         row.addStretch()
+        row.addWidget(self.chk_run_periodically)
         row.addWidget(confirm)
 
         lay.addLayout(row)
@@ -1662,39 +1906,36 @@ class MainWindow(QMainWindow):
     def _on_operation_change(self, value: str):
         self.operation_type = value
 
-        # --- Existing logic ---
-        if value != "AP Only":
+        # Clear AP list when switching away from AP Only
+        if value != "AP Only" and not getattr(self, "headless_mode", False):
             self.ap_list_file = ""
             self.ap_list_path = ""
             if hasattr(self, "ap_path"):
                 self.ap_path.setText("")
 
-        # =========================================================
-        # 🔥 FIXED LOGIC
-        # =========================================================
+        # Show/hide Add+Remove WLC buttons
         if hasattr(self, "btn_add_wlc") and hasattr(self, "remove_btn_wlc"):
-
-            if value == "WLC Only":
-                # ✅ SHOW buttons
+            if value in ("WLC Only", "WLC & AP"):
                 self.btn_add_wlc.setVisible(True)
                 self.remove_btn_wlc.setVisible(True)
-
             else:
-                # ❌ HIDE for BOTH "WLC & AP" and "AP Only"
+                # AP Only — hide buttons and strip back to 1 WLC entry
                 self.btn_add_wlc.setVisible(False)
                 self.remove_btn_wlc.setVisible(False)
-
-                # ✅ Force only ONE WLC
                 if hasattr(self, "wlc_entries"):
                     while len(self.wlc_entries) > 1:
                         entry = self.wlc_entries.pop()
                         entry["widget"].deleteLater()
+
+        # Show/hide WLC block
         if hasattr(self, "wlc_block"):
             self.wlc_block.setVisible(value != "AP Only")
 
+        # Show/hide AP block
         if hasattr(self, "ap_block"):
             self.ap_block.setVisible(value != "WLC Only")
-        # --- Existing calls ---
+
+        # Downstream refresh
         self._refresh_step1()
         self._refresh_visibility()
         self._update_step7_visibility()
@@ -1854,21 +2095,30 @@ class MainWindow(QMainWindow):
         if self.operation_type in ("WLC Only", "WLC & AP"):
             try:
                 if getattr(self, "wlc_entries", []):
-                    # CLEAR OLD WLC SECTIONS (important to avoid stale entries)
-                    for sec in list(self.ini.cfg.sections()):
-                        if sec.startswith("WLC"):
-                            self.ini.cfg.remove_section(sec)
+                    # Only rewrite if at least WLC1 has an IP filled in
+                    has_any_ip = any(
+                        e["ip"].text().strip()
+                        for e in self.wlc_entries
+                    )
+                    if not has_any_ip:
+                        print("[HEADLESS] _save_creds_silent: no WLC IPs in widgets, skipping ini rewrite")
+                    else:
+                        # CLEAR OLD WLC SECTIONS (important to avoid stale entries)
+                        for sec in list(self.ini.cfg.sections()):
+                            if sec.startswith("WLC"):
+                                self.ini.cfg.remove_section(sec)
 
-                    # WRITE EACH WLC AS ITS OWN SECTION
-                    for i, e in enumerate(self.wlc_entries):
-
-                        section = "WLC" if i == 0 else f"WLC{i+1}"
-
-                        self.ini.bulk_set(section, {
-                            "wlc_ip": e["ip"].text().strip(),
-                            "wlc_user": e["user"].text().strip(),
-                            "wlc_pasw": e["pasw"].text()
-                        })
+                        # WRITE EACH WLC AS ITS OWN SECTION
+                        for i, e in enumerate(self.wlc_entries):
+                            ip = e["ip"].text().strip()
+                            if not ip:
+                                continue  # skip empty entries
+                            section = "WLC" if i == 0 else f"WLC{i+1}"
+                            self.ini.bulk_set(section, {
+                                "wlc_ip": ip,
+                                "wlc_user": e["user"].text().strip(),
+                                "wlc_pasw": e["pasw"].text()
+                            })
             except Exception:
                 pass
         if self.operation_type in ("WLC & AP", "AP Only"):
@@ -1884,6 +2134,39 @@ class MainWindow(QMainWindow):
             self.ini.save()
         except Exception:
             pass
+    def _save_run_profile(self):
+        """
+        Save current run configuration to confd/run_profile.json.
+        Credentials stay in config.ini — never duplicated here.
+        """
+        import json
+        try:
+            profile = {
+                "operation_type":  getattr(self, "operation_type", "WLC & AP"),
+                "workflow":        getattr(self, "workflow", "Custom CLI Commands"),
+                "ap_mode":         getattr(self, "ap_mode", "AP Custom Cmd List"),
+                "ap_filter_mode":  getattr(self, "ap_filter_mode", "NONE"),
+                "site_tag":        getattr(self, "site_tag", ""),
+                "model_group":     getattr(self, "model_group", "All AP Models"),
+                "ap_device":       getattr(self, "ap_device", "cos_qca"),
+                "ap_list_file":    getattr(self, "ap_list_file", ""),
+                "wlc_cmds":        getattr(self, "wlc_cmds", []),
+                "ap_cmds":         getattr(self, "ap_cmds", []),
+            }
+            profile_path = CONFD_DIR / "run_profile.json"
+            with open(str(profile_path), "w", encoding="utf-8") as f:
+                json.dump(profile, f, indent=2)
+            if not getattr(self, "headless_mode", False):
+                QMessageBox.information(
+                    self,
+                    "Profile Saved",
+                    f"Scheduled profile saved to:\n{profile_path}\n\n"
+                    f"To run automatically, point Windows Task Scheduler or cron to:\n"
+                    f"  WlanPollerGUI.exe --run-profile\n"
+                    f"  (or: python WlanPollerGUI.py --run-profile)"
+                )
+        except Exception as e:
+            print(f"[PROFILE] Failed to save run profile: {e}")
     def _on_worker_log(self, text):
         """Append worker log and touch last_progress_time so watchdog knows worker is alive."""
         try:
@@ -1911,7 +2194,7 @@ class MainWindow(QMainWindow):
                 pass
 
             last = getattr(self, "last_progress_time", None)
-            timeout_sec = 30
+            timeout_sec = 120
 
             # Image download can be silent for a long time — give it more room
             ap_cmds = getattr(self, "ap_cmds", [])
@@ -1968,8 +2251,10 @@ class MainWindow(QMainWindow):
         # Load shared WLC cmds (per-WLC overrides live in ini, read by engine)
         # Load shared WLC cmds (per-WLC overrides live in ini, read by engine)
         if hasattr(self, "wlc_cmd_box"):
-            self.wlc_cmds = [l.strip() for l in self.wlc_cmd_box.toPlainText().splitlines() if l.strip()]
-
+            box_wlc = [l.strip() for l in self.wlc_cmd_box.toPlainText().splitlines() if l.strip()]
+            if box_wlc:
+                self.wlc_cmds = box_wlc
+            # else: keep self.wlc_cmds as loaded from profile
         # Load AP cmds — but NEVER overwrite if workflow already built them
         # (Upload Files from AP and AP Flash Checker build cmds in _step3_proceed)
         _workflows_that_prebuild_cmds = ("Upload Files from AP", "AP Flash Checker", "TMP Cleanup + reload")
@@ -1981,6 +2266,12 @@ class MainWindow(QMainWindow):
         # Silent save
         try:
             self._save_creds_silent()
+        except Exception:
+            pass
+         # Save scheduled profile if checkbox is ticked
+        try:
+            if hasattr(self, "chk_run_periodically") and self.chk_run_periodically.isChecked():
+                self._save_run_profile()
         except Exception:
             pass
         self.ap_name_map = {}
@@ -2147,10 +2438,13 @@ class MainWindow(QMainWindow):
                             self.run_log.append("[WORKER FAILED] " + str(e))
                     except Exception:
                         pass
-                    try:
-                        QMessageBox.critical(self, "Run Failed", e)
-                    except Exception:
-                        pass
+                    if not getattr(self, "headless_mode", False):
+                        try:
+                            QMessageBox.critical(self, "Run Failed", e)
+                        except Exception:
+                            pass
+                    else:
+                        print(f"[HEADLESS] Run failed: {e}")
                     try:
                         if hasattr(self, "sidebar"):
                             self.sidebar.setEnabled(True)
@@ -2160,7 +2454,8 @@ class MainWindow(QMainWindow):
                     if hasattr(self, "btn_close"):
                         self.btn_close.setEnabled(True)
                     self.run_in_progress = False
-
+                    if getattr(self, "headless_mode", False):
+                        QTimer.singleShot(500, QApplication.quit)
                 self.worker.failed.connect(_on_fail)
         except Exception:
             pass
@@ -2193,10 +2488,12 @@ class MainWindow(QMainWindow):
         if hasattr(self, "btn_close"):
             self.btn_close.setEnabled(False)
         self.run_in_progress = True
-        if self.operation_type == "AP Only":
-            # Pre-read file to know row count
-            with open(self.ap_list_file, "r", encoding="utf-8", errors="ignore") as f:
-                lines = [l for l in f if l.strip()]
+        if self.operation_type == "AP Only" and getattr(self, "ap_list_file", ""):
+            try:
+                with open(self.ap_list_file, "r", encoding="utf-8", errors="ignore") as f:
+                    lines = [l for l in f if l.strip()]
+            except Exception as e:
+                print(f"[HEADLESS] Warning: could not pre-read AP list: {e}")
 
         try:
             start_time = datetime.now().strftime("%H:%M:%S")
@@ -3054,9 +3351,9 @@ class MainWindow(QMainWindow):
                 try:
                     # So AP Only mode never loads old WLC files.
                     need_populate = (
-                            hasattr(self, "ap_table")
-                            and self.ap_table.rowCount() == 0
-
+                        hasattr(self, "ap_table")
+                        and self.ap_table.rowCount() == 0
+                        and self.operation_type != "WLC & AP"  # WLC & AP always uses live signals
                     )
 
                     if need_populate:
@@ -3209,7 +3506,7 @@ class MainWindow(QMainWindow):
         # finally mark run_in_progress false
         try:
             self.run_count += 1
-            if self.run_count >= 2:
+            if self.run_count >= 2 and not getattr(self, "headless_mode", False):
                 QMessageBox.information(
                     self,
                     "Restart Recommended",
@@ -3218,6 +3515,15 @@ class MainWindow(QMainWindow):
                     "Continuing without restart may cause unexpected behaviour."
                 )
             self.run_in_progress = False
+
+            # Auto-quit in headless mode after run completes
+            if getattr(self, "headless_mode", False):
+                print("[HEADLESS] Run complete. Saving log and exiting.")
+                try:
+                    self._save_run_log_headless()
+                except Exception:
+                    pass
+                QTimer.singleShot(1000, QApplication.quit)
 
         except Exception:
             pass
@@ -3322,7 +3628,10 @@ class MainWindow(QMainWindow):
         lines.append(f"   - {op}")
 
         if op != "AP Only" and getattr(self, "wlc_entries", []):
-            lines.append(f"   - WLC IP: {self.wlc_entries[0]['ip'].text().strip()}")
+            for entry in self.wlc_entries:
+                ip = entry["ip"].text().strip()
+                if ip:
+                    lines.append(f"   - WLC IP: {ip}")
 
         # ---------------- Credentials ----------------
         lines.append("")
@@ -3859,6 +4168,7 @@ def resource_path(relpath: str) -> str:
     return os.path.join(base, relpath)
 
 
+# FIND:
 def main():
     app = QApplication(sys.argv)
     apply_global_style(app)
@@ -3867,6 +4177,29 @@ def main():
     # ensure worker stop when the app quits (in case user closes app from other places)
     app.aboutToQuit.connect(win._stop_worker)
     win.show()
+    if "--run-profile" in sys.argv:
+            win.headless_mode = True
+            win._load_profile_and_run()
+    sys.exit(app.exec())
+
+# REPLACE WITH:
+def main():
+    app = QApplication(sys.argv)
+    apply_global_style(app)
+    app.setWindowIcon(QIcon(resource_path("assets/ciscologo.ico")))
+    win = MainWindow()
+    app.aboutToQuit.connect(win._stop_worker)
+
+    # ── Headless / scheduled mode ──────────────────────────
+    headless = "--run-profile" in sys.argv or "--headless" in sys.argv
+    if headless:
+        win.headless_mode = True
+        win.show()   # window must be visible for Qt widgets to work
+        print("[HEADLESS] WlanPoller launched in scheduled/headless mode")
+        QTimer.singleShot(200, win._load_profile_and_run)
+    else:
+        win.show()
+
     sys.exit(app.exec())
 
 

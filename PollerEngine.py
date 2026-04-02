@@ -568,10 +568,14 @@ class PollerEngine:
                     is_special, actual_cmd, needs_confirm, sleep_secs = self.SpecialCmdCheck(cmd)
                     if is_special and sleep_secs > 0:
                         self._log(f"[SLEEP] Waiting {sleep_secs}s before next command...")
-                        _safe_write_append(out_file, f"\n<cmd string='sleep_{sleep_secs}'>\n\t[SLEEP] {sleep_secs} seconds delay\n")
-                        time.sleep(sleep_secs)
-                        pct = int((i / total) * 100)
-                        self._progress(pct)
+                        elapsed = 0
+                        heartbeat_interval = 30
+                        while elapsed < sleep_secs:
+                            chunk = min(heartbeat_interval, sleep_secs - elapsed)
+                            time.sleep(chunk)
+                            elapsed += chunk
+                            if elapsed < sleep_secs:
+                                self._log(f"[SLEEP] Still waiting... {elapsed}s / {sleep_secs}s")
                         continue
                     self._log(f"[WLC] Running: {actual_cmd}")
                     _safe_write_append(out_file, f"\n<cmd string='{actual_cmd}'>\n\t{actual_cmd}\n")
@@ -1044,15 +1048,21 @@ class PollerEngine:
             cleanup_done = False
             for cmd in cmds:
                 if self._shutdown_event.is_set():
-                    return idx, ap.ip, ap.model, "Cancelled"
+                        return idx, ap.ip, ap.model, "Cancelled", getattr(ap, "name", ""), getattr(ap, "wlc_ip", "")
 
                 is_special, actual_cmd, needs_confirm, sleep_secs = self.SpecialCmdCheck(cmd)
 
                 # --- Handle sleep ---
                 if is_special and sleep_secs > 0:
                     self._log(f"[SLEEP] Waiting {sleep_secs}s before next command...")
-                    _safe_write_append(fname, f"\n<cmd string='sleep_{sleep_secs}'>\n\t[SLEEP] {sleep_secs} seconds delay\n")
-                    time.sleep(sleep_secs)
+                    elapsed = 0
+                    heartbeat_interval = 30
+                    while elapsed < sleep_secs:
+                        chunk = min(heartbeat_interval, sleep_secs - elapsed)
+                        time.sleep(chunk)
+                        elapsed += chunk
+                        if elapsed < sleep_secs:
+                            self._log(f"[SLEEP] Still waiting... {elapsed}s / {sleep_secs}s")
                     continue
 
                 cmd_lower = actual_cmd.lower()
@@ -1170,7 +1180,107 @@ class PollerEngine:
             return idx, ap.ip, actual_model, "Success", ap.name, ap.wlc_ip
         except Exception as e:
            return idx, ap.ip, ap.model, f"Failed: {str(e)}", getattr(ap, "name", ""), getattr(ap, "wlc_ip", "")
+    def _get_wlc_sections_list(self) -> list:
+        """Return all configured WLC sections regardless of operation mode."""
+        sections = []
+        for sec in self.ini.cfg.sections():
+            if sec == "WLC" or (sec.startswith("WLC") and sec[3:].isdigit()):
+                if self.ini.get(sec, "wlc_ip"):
+                    sections.append(sec)
+        return sorted(sections, key=lambda s: 0 if s == "WLC" else int(s[3:]))
 
+    def _run_wlc_cmds_for_section(self, section: str, wlc_cmds: list) -> str:
+        """Run WLC commands for a single named section. Same logic as run_wlc_cmds but single-section."""
+        self._log(f"[WLC] ===== Starting section [{section}] =====")
+        cmds_section = f"{section}_CMDS"
+        effective_cmds = wlc_cmds
+        if self.ini.cfg.has_section(cmds_section):
+            raw = self.ini.cfg.get(cmds_section, "cmds", fallback="").strip()
+            if raw:
+                effective_cmds = [c.strip() for c in raw.splitlines() if c.strip()]
+        try:
+            conn = self._wlc_connect(section)
+            wlc_ip_val = self.ini.get(section, "wlc_ip")
+            safe_ip = wlc_ip_val.replace(".", "_")
+            wlc_folder = os.path.join(self.data_dir, f"WLC_{safe_ip}")
+            os.makedirs(wlc_folder, exist_ok=True)
+            out_file = os.path.join(wlc_folder, "wlc_outputs.txt")
+            header = (
+                f"<run timestamp='{datetime.now().isoformat()}' "
+                f"device='eWLC' hostname='{wlc_ip_val}'>\n"
+            )
+            _safe_write_append(out_file, header)
+            total = len(effective_cmds)
+            for i, cmd in enumerate(effective_cmds, 1):
+                is_special, actual_cmd, needs_confirm, sleep_secs = self.SpecialCmdCheck(cmd)
+                if is_special and sleep_secs > 0:
+                    self._log(f"[SLEEP] Waiting {sleep_secs}s before next command...")
+                    elapsed = 0
+                    heartbeat_interval = 30
+                    while elapsed < sleep_secs:
+                        chunk = min(heartbeat_interval, sleep_secs - elapsed)
+                        time.sleep(chunk)
+                        elapsed += chunk
+                        if elapsed < sleep_secs:
+                            self._log(f"[SLEEP] Still waiting... {elapsed}s / {sleep_secs}s")
+                    continue
+                self._log(f"[WLC][{section}] Running: {actual_cmd}")
+                _safe_write_append(out_file, f"\n<cmd string='{actual_cmd}'>\n\t{actual_cmd}\n")
+                if needs_confirm:
+                    conn.write_channel(actual_cmd + "\n")
+                    time.sleep(3)
+                    conn.write_channel("y\n")
+                    time.sleep(2)
+                    out = conn.read_channel()
+                else:
+                    out = conn.send_command(actual_cmd, read_timeout=120)
+                _safe_write_append(out_file, out + "\n")
+                self._progress(int((i / total) * 100))
+            conn.disconnect()
+            return out_file
+        except Exception as e:
+            self._log(f"[WLC] [{section}] failed: {e}")
+            return ""
+
+    def _fetch_ap_list_for_section(self, section: str) -> list:
+        """Fetch AP list from a single WLC section."""
+        try:
+            rows = self._process_single_wlc(section)
+            if self.workflow == "AP Flash Checker":
+                filtered = []
+                for r in rows:
+                    model_upper = r.model.upper()
+                    if any(prefix in model_upper for prefix in QCA_PREFIXES):
+                        filtered.append(r)
+                self._log(f"[FILTER] {section}: {len(filtered)}/{len(rows)} APs after QCA filter")
+                return filtered
+            return rows
+        except Exception as e:
+            self._log(f"[WLC] _fetch_ap_list_for_section [{section}] error: {e}")
+            return []
+
+    def _filter_by_site_tag_section(self, section: str, full_rows: list, site_tag: str):
+        """Apply site tag filter for a single WLC section."""
+        try:
+            conn = self._wlc_connect(section)
+            tag_all = conn.send_command("show ap tag summary", read_timeout=180)
+            total = WlcParse.parse_total_ap_cnt_from_tag_summary(tag_all) or len(full_rows)
+            out = conn.send_command(f"show ap tag summary | inc {site_tag}", read_timeout=120)
+            conn.disconnect()
+            names = WlcParse.parse_ap_names_from_tag_summary(out, site_tag)
+            if not names:
+                return [], total
+            name_map = {r.name: r for r in full_rows}
+            selected = []
+            for n in names:
+                if n in name_map:
+                    r = name_map[n]
+                    r.site_tag = site_tag
+                    selected.append(r)
+            return selected, total
+        except Exception as e:
+            self._log(f"[WLC] site tag filter [{section}] failed: {e}")
+            return full_rows, len(full_rows)
     def run_ap_poller(self, ap_rows, device, ap_cmds, ap_mode="AP Custom Cmd List"):
         # Option A: user types the full command manually in the AP cmd box.
         # GUI already prepends "ip sftp username/password" for SFTP before calling here.
@@ -1271,7 +1381,7 @@ class PollerEngine:
 
 
         self._log(f"[AP] Done. Success={self.success} Fail={self.failed} Time={elapsed}s")
-        return results
+        return self.success, self.failed  # return instead of only storing
 
     def _get_wlc_sections(self) -> list:
         """Returns all WLC sections from ini e.g. ['WLC', 'WLC2', 'WLC3']"""
@@ -1284,8 +1394,7 @@ class PollerEngine:
         
 
         # 🔒 Restrict to ONE WLC for WLC & AP
-        if self.operation == "WLC & AP":
-            return sections[:1]
+        
         def _sort_key(s):
             return 0 if s == "WLC" else int(s[3:])
         return sorted(sections, key=lambda s: 0 if s == "WLC" else int(s[3:]))
